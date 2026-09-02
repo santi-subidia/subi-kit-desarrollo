@@ -8,7 +8,7 @@ description: >-
 
 # SDD Workflow: Spec-Driven Development
 
-Este skill define el protocolo de ingeniería de software estructurado para el desarrollo de nuevas features y cambios de arquitectura.
+Este skill define el protocolo de ingeniería de software estructurado para el desarrollo de nuevas features y cambios de arquitectura en **SubiKit**.
 
 ---
 
@@ -18,8 +18,11 @@ Este skill define el protocolo de ingeniería de software estructurado para el d
 > **1. Puertas de Aprobación Obligatorias (Gated Phases)**:
 > El agente NUNCA debe avanzar a la siguiente fase sin la aprobación explícita del usuario. Cada fase requiere confirmación o ajustes antes de continuar.
 >
-> **2. Feedback Loop en Verificación**:
-> Si durante la verificación algún criterio de aceptación de la Spec NO se cumple, el agente debe explicar exactamente qué falló, cuál es la discrepancia, y coordinar con el usuario si se actualiza el Plan Técnico o se agregan tareas de corrección a `tasks.md` antes de reiniciar la implementación.
+> **2. Dominio y Lenguaje Ubicuo (`CONTEXT.md`)**:
+> Durante las Fases 1 y 2, es obligatorio consultar y actualizar `CONTEXT.md` para evitar jerga inconsistente o malentendidos de negocio.
+>
+> **3. Feedback Loop Determinístico en Verificación**:
+> Si durante la verificación algún criterio de aceptación de la Spec NO se cumple, el agente debe construir un test/loop automatizado que demuestre la discrepancia, aplicar el fix de forma aislada, y validar el paso a VERDE antes de solicitar re-aprobación.
 
 ---
 
@@ -42,26 +45,30 @@ Cada feature se gestiona en `.specs/<feature-name>/` (o `docs/specs/<feature-nam
    - Alcance (In Scope / Out of Scope).
    - Actores y flujos de usuario.
    - Criterios de Aceptación testeables en formato Gherkin (Dado/Cuando/Entonces).
-3. **🚪 Puerta de Aprobación 1**: Solicitar revisión al usuario de la Spec inicial.
+3. Sincronizar términos con `CONTEXT.md` (Domain Modeling).
+4. **🚪 Puerta de Aprobación 1**: Solicitar revisión al usuario de la Spec inicial.
 
 ---
 
 ### 🔹 Fase 2: Clarificación y Rondas de Preguntas
 1. Analizar la Spec en busca de ambigüedades, asunciones implícitas, edge cases o dependencias técnicas no resueltas.
 2. Presentar preguntas directas, estructuradas y con opciones cuando sea relevante.
-3. Actualizar la `spec.md` con las respuestas y acuerdos alcanzados.
+3. Actualizar la `spec.md` y el glosario en `CONTEXT.md` con las respuestas y acuerdos alcanzados.
 4. **🚪 Puerta de Aprobación 2**: Confirmar con el usuario que no quedan dudas abiertas antes de diseñar la solución técnica.
 
 ---
 
 ### 🔹 Fase 3: Plan Técnico (`tech-plan.md`)
-1. Investigar la documentación existente del proyecto (`DESIGN.md`, `PRODUCT.md`, schemas de BD, arquitecturas previas).
-2. Crear `tech-plan.md` detallando:
+1. Investigar la documentación existente del proyecto (`CONTEXT.md`, `docs/adr/`, schemas de BD, arquitecturas previas).
+2. Aplicar principios de **Deep Modules & Seams** (John Ousterhout y Michael Feathers).
+3. Aplicar **Design It Twice**: Comparar 2 opciones de diseño evaluando trade-offs antes de elegir.
+4. Si la decisión tiene impacto estructural a nivel de sistema, registrar un ADR en `docs/adr/`.
+5. Crear `tech-plan.md` detallando:
    - Capas afectadas (Domain, Application, Infrastructure, UI).
    - Esquemas de datos, DTOs, migraciones SQL o cambios en APIs.
-   - Decisiones de diseño justificadas y consideraciones de seguridad/performance.
-   - Estrategia de testing unitario y de integración.
-3. **🚪 Puerta de Aprobación 3**: Presentar el Plan Técnico y esperar aprobación explícita del usuario.
+   - Opciones evaluadas y justificación técnica.
+   - Estrategia de testing (unitario, integración y feedback loops).
+6. **🚪 Puerta de Aprobación 3**: Presentar el Plan Técnico y esperar aprobación explícita del usuario.
 
 ---
 
@@ -90,9 +97,9 @@ Cada feature se gestiona en `.specs/<feature-name>/` (o `docs/specs/<feature-nam
 3. **Evaluación de Resultados**:
    - **Caso Exitoso**: Si todos los criterios cumplen, documentar evidencias en `verify.md`.
    - **Caso con Observaciones (Feedback Loop)**:
-     - Detallar qué criterio no se cumple y la causa técnica.
+     - Detallar qué criterio no se cumple y la causa técnica mediante un test reproducible.
      - Proponer las tareas de corrección a agregar en `tasks.md` (y actualizar `tech-plan.md` si hubo cambio de diseño).
-     - Retornar a la Fase 5 (Implementación) hasta satisfacer el criterio.
+     - Retornar a la Fase 5 (Implementación) hasta satisfacer el criterio en VERDE.
 4. **🚪 Puerta de Aprobación 6**: Obtener el visto bueno final del usuario confirmando que la feature cumple al 100%.
 
 ---
