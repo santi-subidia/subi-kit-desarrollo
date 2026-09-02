@@ -1,23 +1,37 @@
 ---
 name: tailwind-css
-title: Estilos con Tailwind CSS y Diseño Responsivo
+title: Estilos con Tailwind CSS, Tokens y Diseño Responsivo
 category: frontend
 always_on: false
-description: Reglas de maquetación, utility classes, tokens semánticos, diseño mobile-first y accesibilidad visual.
-tags: [tailwind, css, frontend, styling, ui]
+description: Reglas de maquetación, tokens semánticos (OKLCH), diseño mobile-first, prevención de AI slop y accesibilidad visual.
+tags: [tailwind, css, frontend, styling, ui, design-system, oklch]
 ---
 
-# Estilos con Tailwind CSS y Diseño UI
+# Estilos con Tailwind CSS y Diseño UI Artesanal
 
-## 1. Filosofía Utility-First
-- **Clases estándar**: Usar clases estándar de Tailwind en lugar de estilos inline o valores arbitrarios `[#123456]`, a menos que sea estrictamente necesario.
-- **Mobile First**: Diseñar primero para dispositivos móviles y aplicar breakpoints ascendentes (`sm:`, `md:`, `lg:`, `xl:`).
-- **Consistencia en Espaciado y Tipografía**: Utilizar la escala predeterminada de spacing (`p-2`, `p-4`, `gap-4`, `space-y-4`) y tamaños de texto coherentes (`text-sm`, `text-base`, `text-lg`).
+## 1. Filosofía Token-First y Sistema de Diseño
+- **Fuente de Verdad (`DESIGN.md` / `@theme`)**: Utilizar siempre los tokens semánticos del sistema de diseño (`bg-background`, `text-foreground`, `bg-primary`, `border-border`, etc.). Evitar valores hexadecimales arbitrarios hardcodeados (`[#123456]`).
+- **Espacio de Color OKLCH y Neutros Tintados**: Los fondos oscuros y textos secundarios deben emplear neutros tintados con el matiz (`hue`) de la marca. Prohibido el texto gris plano sobre fondos saturados o con tinte.
+- **Mobile-First Real**: Construir primero para pantallas pequeñas y escalar progresivamente con breakpoints (`sm:`, `md:`, `lg:`, `xl:`).
+- **Piso Mínimo en Inputs Móviles**: Los campos de texto en móvil deben tener `text-base` (≥16px / 1rem) para evitar que iOS Safari fuerce un zoom destructivo en la pantalla al enfocar.
 
-## 2. Organización y Composición de Clases
-- **Agrupación lógica**: Ordenar mentalmente las clases: Layout/Display (`flex`, `grid`) -> Posicionamiento (`relative`, `absolute`) -> Spacing/Dimensiones (`w-full`, `p-4`) -> Tipografía (`text-lg`, `font-semibold`) -> Colores/Efectos (`bg-primary`, `rounded-lg`, `shadow-sm`) -> Estados (`hover:`, `focus-visible:`).
-- **Uso de `clsx` / `tailwind-merge` (`cn()`)**: Siempre que se combinen clases condicionales o dinámicas en componentes React, utilizar una función helper `cn(...)` para resolver conflictos.
+## 2. Prevención de "AI Frontend Slop" (Anti-Patrones Prohibidos)
+- **🚫 Prohibido anidar tarjetas dentro de tarjetas (*Cards in cards*)**: Usar variaciones de fondo sutiles, bordes tenues o espaciado en lugar de cajas dentro de cajas.
+- **🚫 Prohibidas las cuadrículas monótonas de tarjetas idénticas**: Romper la monotonía combinando elementos de ancho completo, asimetría controlada y jerarquías claras.
+- **🚫 Prohibido el *kicker/eyebrow* compulsivo**: No colocar etiquetas en mayúsculas flotando arriba de cada título en cada sección. El título debe sostenerse solo.
+- **🚫 Prohibido el texto con gradientes decorativos**: El énfasis se expresa mediante peso tipográfico (`font-bold`), tamaño o contraste.
+- **🚫 Prohibidas las sombras duras de bloque**: Evitar `box-shadow: 4px 4px 0` salvo en interfaces expresamente neobrutalistas.
 
-## 3. Accesibilidad y Modo Oscuro
-- **Contraste adecuado**: Garantizar que el texto cumpla con ratios WCAG AA de contraste sobre los fondos.
-- **Focus Rings**: Incluir estilos visibles de foco (`focus-visible:ring-2 focus-visible:outline-none`) en elementos interactivos como botones y enlaces.
+## 3. Organización, Composición y Helper `cn()`
+- **Agrupación lógica de clases**:
+  `Layout/Display` (`flex`, `grid`) → `Posicionamiento` (`relative`, `absolute`) → `Spacing/Dimensiones` (`w-full`, `p-4`, `min-w-0`) → `Tipografía` (`text-base`, `font-semibold`) → `Colores/Fondos` (`bg-surface`, `text-foreground`) → `Bordes/Sombras` (`rounded-lg`, `border`) → `Estados e Interacciones` (`hover:`, `focus-visible:`, `disabled:`).
+- **Uso de `clsx` + `tailwind-merge` (`cn()`)**: En componentes React dinámicos o reutilizables, resolver colisiones de clases siempre con la función helper `cn(...)`.
+
+## 4. Accesibilidad (a11y), Superficies y Ergonomía
+- **Contraste WCAG AA**: Ratio mínimo de 4.5:1 en texto regular y 3:1 en encabezados grandes.
+- **Touch Targets Ergonómicos**: En dispositivos táctiles, botones y enlaces deben tener al menos **44x44px** de área interactiva (`min-h-[44px] min-w-[44px]` o `p-3`).
+- **Anillos de Foco Visibles**: Todo elemento interactivo debe incluir `:focus-visible` accesible (`focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none focus-visible:ring-offset-2`).
+- **Superficies Nativas Personalizadas**:
+  - Selección de texto: `selection:bg-primary/20 selection:text-primary-foreground`.
+  - Números tabulares en tablas/métricas: `tabular-nums`.
+  - Reducción de movimiento: `motion-reduce:transition-none` o `motion-reduce:animate-none`.
