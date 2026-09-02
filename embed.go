@@ -1,4 +1,4 @@
-package devkit
+package subikit
 
 import (
 	"embed"

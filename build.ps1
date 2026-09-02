@@ -1,18 +1,18 @@
-Write-Host "Compilando Dev-Kit IA (Windows & Linux)..." -ForegroundColor Cyan
+Write-Host "Compilando SubiKit IA (Windows & Linux)..." -ForegroundColor Cyan
 
 New-Item -ItemType Directory -Force -Path "bin" | Out-Null
 
 # Windows
-Write-Host "-> Compilando bin/devkit.exe (Windows amd64)..."
+Write-Host "-> Compilando bin/subikit.exe (Windows amd64)..."
 $env:GOOS = "windows"
 $env:GOARCH = "amd64"
-go build -ldflags "-s -w" -o bin/devkit.exe ./cmd/devkit
+go build -ldflags "-s -w" -o bin/subikit.exe ./cmd/subikit
 
 # Linux
-Write-Host "-> Compilando bin/devkit (Linux amd64)..."
+Write-Host "-> Compilando bin/subikit (Linux amd64)..."
 $env:GOOS = "linux"
 $env:GOARCH = "amd64"
-go build -ldflags "-s -w" -o bin/devkit ./cmd/devkit
+go build -ldflags "-s -w" -o bin/subikit ./cmd/subikit
 
 Remove-Item Env:\GOOS -ErrorAction SilentlyContinue
 Remove-Item Env:\GOARCH -ErrorAction SilentlyContinue

@@ -1,6 +1,6 @@
-# Dev-Kit para Desarrollo con IA 🚀
+# SubiKit: Dev-Kit para Desarrollo con IA 🚀
 
-Kit de desarrollo portable y multiplataforma para asistentes de código con Inteligencia Artificial (**Antigravity / Gemini CLI**, Cursor, Claude Code y entornos universales).
+Kit de desarrollo personalizado, portable y multiplataforma para asistentes de código con Inteligencia Artificial (**Antigravity / Gemini CLI**, Cursor, Claude Code y entornos universales).
 
 Compilado como un **único binario en Go** (sin dependencias de Node.js o Python), con catálogo embebido de **Rules & Conventions**, motor de **detección automática de stack**, flujo **SDD (Spec-Driven Development)**, gestión de servidores **MCP** y arquitectura de **Agente Orquestador + Subagentes Especializados**.
 
@@ -11,7 +11,7 @@ Compilado como un **único binario en Go** (sin dependencias de Node.js o Python
 - **📦 Binario Único y Autocontenido**: Reglas, plantillas, skills y agentes embebidos con `//go:embed`.
 - **👑 Agente Orquestador & Subagentes**: Coordinador principal (Tech Lead) que delega tareas a subagentes especializados según la fase del desarrollo.
 - **🔄 Flujo SDD (Spec-Driven Development)**: Metodología estricta de 7 fases con **puertas de aprobación obligatorias** y **loop de feedback en verificación**.
-- **🔌 Gestión de Servidores MCP**: Configuración y diagnóstico de `engram`, `context7` y `codegraph` con backups automáticos.
+- **🔌 Gestión de Servidores MCP**: Configuración y diagnóstico de `engram`, `context7` y `codegraph` con backups automáticos de `mcp_config.json`.
 - **🔍 Detección Automática de Stack**: Inspecciona proyectos simples y monorepos (`package.json`, `tsconfig.json`, `.NET / C#`, `go.mod`, `supabase/`, etc.).
 - **🌐 Modo Híbrido**: Local (`.agents/` y `AGENTS.md`) o Global (`~/.gemini/config/`).
 
@@ -62,50 +62,50 @@ Compilado como un **único binario en Go** (sin dependencias de Node.js o Python
 
 ---
 
-## 🚀 Uso del CLI (`devkit`)
+## 🚀 Uso del CLI (`subikit`)
 
 ### 1. Inicializar en un proyecto nuevo
 ```bash
 # Auto-detecta el stack e inyecta reglas, skills y agentes en .agents/ y AGENTS.md
-devkit init
+subikit init
 ```
 
 ### 2. Gestión de Agentes y Subagentes
 ```bash
 # Listar todos los agentes disponibles
-devkit agent list
+subikit agent list
 
 # Ver el system prompt y directrices de un agente
-devkit agent show architect
-devkit agent show orchestrator
+subikit agent show architect
+subikit agent show orchestrator
 ```
 
 ### 3. Gestión de Servidores MCP
 ```bash
-devkit mcp list
-devkit mcp doctor
-devkit mcp install context7 --token <tu-token>
-devkit mcp install --all --token <tu-token>
+subikit mcp list
+subikit mcp doctor
+subikit mcp install context7 --token <tu-token>
+subikit mcp install --all --token <tu-token>
 ```
 
 ### 4. Flujo SDD (Spec-Driven Development)
 ```bash
 # Crear nueva feature en .specs/mi-feature/
-devkit sdd new mi-feature
+subikit sdd new mi-feature
 
 # Ver estado de features
-devkit sdd status
+subikit sdd status
 ```
 
 ### 5. Configurar globalmente en tu máquina
 ```bash
-devkit init --global
+subikit init --global
 ```
 
 ### 6. Diagnóstico y catálogo unificado
 ```bash
-devkit list
-devkit doctor
+subikit list
+subikit doctor
 ```
 
 ---
@@ -114,3 +114,5 @@ devkit doctor
 
 - **Windows (PowerShell)**: `.\build.ps1`
 - **Linux / macOS**: `./build.sh`
+
+Binarios resultantes en `/bin/` (`subikit.exe` y `subikit`).

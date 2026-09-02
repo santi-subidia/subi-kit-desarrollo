@@ -13,17 +13,18 @@ const (
 	colorYellow = "\033[33m"
 	colorRed    = "\033[31m"
 	colorDim    = "\033[2m"
+	colorMagenta = "\033[35m"
 )
 
-// PrintBanner imprime el encabezado visual de devkit.
+// PrintBanner imprime el encabezado visual de subikit.
 func PrintBanner() {
 	fmt.Println(colorCyan + colorBold + `
-   ___            _  ___ _   
-  / _ \_____   __/ |/ (_) |_ 
- / / |/ _ \ \ / /   /| | __|
-/ /_/ /  __/\ V /   \| | |_ 
-\____/ \___| \_/|_|\_\_|\__| (IA Dev-Kit)` + colorReset)
-	fmt.Println(colorDim + " Kit de Desarrollo con IA & Reglas de Arquitectura" + colorReset)
+   ______       __     _ __   _ __ 
+  / __/ /  __  / /    (_) /__(_) /_
+ _\ \/ _ \/ /_/ /    / /  '_/ / __/
+/___/____/\____/____/_/_/\_\_/\__/ 
+              /_____/              ` + colorReset + colorMagenta + `(v0.4.0)` + colorReset)
+	fmt.Println(colorDim + " SubiKit: Dev-Kit Personalizado para Desarrollo con IA" + colorReset)
 	fmt.Println()
 }
 

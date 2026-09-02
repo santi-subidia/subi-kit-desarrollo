@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	devkit "github.com/santi-subidia/dev-kit-desarrollo"
+	subikit "github.com/santi-subidia/dev-kit-desarrollo"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/agents"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/detector"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/mcp"
@@ -27,7 +27,7 @@ func main() {
 
 	subcommand := os.Args[1]
 
-	rulesFS, err := devkit.GetRulesFS()
+	rulesFS, err := subikit.GetRulesFS()
 	if err != nil {
 		ui.Error(fmt.Sprintf("Error al acceder al catálogo de reglas embebido: %v", err))
 		os.Exit(1)
@@ -38,7 +38,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	skillsFS, err := devkit.GetSkillsFS()
+	skillsFS, err := subikit.GetSkillsFS()
 	if err != nil {
 		ui.Error(fmt.Sprintf("Error al acceder al catálogo de skills embebido: %v", err))
 		os.Exit(1)
@@ -49,7 +49,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	agentsFS, err := devkit.GetAgentsFS()
+	agentsFS, err := subikit.GetAgentsFS()
 	if err != nil {
 		ui.Error(fmt.Sprintf("Error al acceder al catálogo de agentes embebido: %v", err))
 		os.Exit(1)
@@ -78,7 +78,7 @@ func main() {
 	case "agent":
 		handleAgent(agentsMgr, os.Args[2:])
 	case "version", "-v", "--version":
-		fmt.Printf("Dev-Kit IA CLI v%s\n", version)
+		fmt.Printf("SubiKit CLI v%s\n", version)
 	case "help", "-h", "--help":
 		printUsage()
 	default:
@@ -283,7 +283,7 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 		}
 		ui.Success(fmt.Sprintf("Reglas Locales Activas (.agents/rules/): %s", strings.Join(active, ", ")))
 	} else {
-		ui.Warn("No se encontraron reglas locales en .agents/rules/. Ejecuta 'devkit init' para crearlas.")
+		ui.Warn("No se encontraron reglas locales en .agents/rules/. Ejecuta 'subikit init' para crearlas.")
 	}
 
 	localSkillsPath := antigravityTarget.GetProjectSkillsPath(absPath)
@@ -308,7 +308,21 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 		ui.Success(fmt.Sprintf("Agentes Locales Activos (.agents/agents/): %s", strings.Join(activeAgents, ", ")))
 	}
 
-	// 2. Diagnóstico de Servidores MCP
+	// 2. Diagnóstico Global
+	globalRulesPath, err := antigravityTarget.GetGlobalRulesPath()
+	if err == nil {
+		if entries, err := os.ReadDir(globalRulesPath); err == nil && len(entries) > 0 {
+			var active []string
+			for _, e := range entries {
+				if strings.HasSuffix(e.Name(), ".md") {
+					active = append(active, strings.TrimSuffix(e.Name(), ".md"))
+				}
+			}
+			ui.Success(fmt.Sprintf("Reglas Globales Activas (%s): %s", globalRulesPath, strings.Join(active, ", ")))
+		}
+	}
+
+	// 3. Diagnóstico de Servidores MCP
 	ui.Section("Diagnóstico de Servidores MCP")
 	mcpStatuses := mcpMgr.Doctor()
 	for _, status := range mcpStatuses {
@@ -327,7 +341,7 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 
 func handleAgent(agentsMgr *agents.Manager, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Uso: devkit agent <list|show> [argumentos]")
+		fmt.Println("Uso: subikit agent <list|show> [argumentos]")
 		fmt.Println()
 		fmt.Println("Comandos de Agentes:")
 		fmt.Println("  list            Muestra los roles y subagentes disponibles")
@@ -352,7 +366,7 @@ func handleAgent(agentsMgr *agents.Manager, args []string) {
 
 	case "show":
 		if len(args) < 2 {
-			ui.Error("Debes especificar el nombre del agente. Ej: devkit agent show architect")
+			ui.Error("Debes especificar el nombre del agente. Ej: subikit agent show architect")
 			return
 		}
 		name := args[1]
@@ -373,7 +387,7 @@ func handleAgent(agentsMgr *agents.Manager, args []string) {
 
 func handleMCP(mcpMgr *mcp.Manager, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Uso: devkit mcp <list|install|doctor> [opciones]")
+		fmt.Println("Uso: subikit mcp <list|install|doctor> [opciones]")
 		fmt.Println()
 		fmt.Println("Comandos MCP:")
 		fmt.Println("  list                    Muestra los servidores MCP soportados y su estado")
@@ -403,7 +417,7 @@ func handleMCP(mcpMgr *mcp.Manager, args []string) {
 
 	case "install":
 		if len(args) < 2 {
-			ui.Error("Debes especificar el ID del servidor o '--all'. Ej: devkit mcp install context7 --token <tu-token>")
+			ui.Error("Debes especificar el ID del servidor o '--all'. Ej: subikit mcp install context7 --token <tu-token>")
 			return
 		}
 
@@ -464,7 +478,7 @@ func handleMCP(mcpMgr *mcp.Manager, args []string) {
 
 func handleSDD(skillsMgr *skills.Manager, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Uso: devkit sdd <new|status> [argumentos]")
+		fmt.Println("Uso: subikit sdd <new|status> [argumentos]")
 		fmt.Println()
 		fmt.Println("Comandos SDD:")
 		fmt.Println("  new <nombre-feature>  Crea la carpeta .specs/<nombre>/ con las plantillas de las 7 fases")
@@ -476,7 +490,7 @@ func handleSDD(skillsMgr *skills.Manager, args []string) {
 	switch action {
 	case "new":
 		if len(args) < 2 {
-			ui.Error("Debes especificar el nombre de la feature. Ej: devkit sdd new agregar-autenticacion")
+			ui.Error("Debes especificar el nombre de la feature. Ej: subikit sdd new agregar-autenticacion")
 			return
 		}
 		featureName := args[1]
@@ -512,7 +526,7 @@ func handleSDD(skillsMgr *skills.Manager, args []string) {
 
 		entries, err := os.ReadDir(specsDir)
 		if err != nil || len(entries) == 0 {
-			ui.Info("No hay features activas en .specs/. Usa 'devkit sdd new <nombre>' para crear una.")
+			ui.Info("No hay features activas en .specs/. Usa 'subikit sdd new <nombre>' para crear una.")
 			return
 		}
 
@@ -548,17 +562,17 @@ func fileExists(path string) bool {
 
 func printUsage() {
 	ui.PrintBanner()
-	fmt.Println("Uso: devkit <comando> [opciones]")
+	fmt.Println("Uso: subikit <comando> [opciones]")
 	fmt.Println()
 	fmt.Println("Comandos disponibles:")
 	fmt.Println("  init     Inicializa reglas, skills y agentes en el proyecto")
 	fmt.Println("           Opciones: --global, --force, --all, --path <dir>")
 	fmt.Println("  agent    Gestión de Agentes y Subagentes (Orquestador y Especialistas)")
-	fmt.Println("           Subcomandos: devkit agent list, devkit agent show <nombre>")
+	fmt.Println("           Subcomandos: subikit agent list, subikit agent show <nombre>")
 	fmt.Println("  sdd      Gestión del flujo Spec-Driven Development (SDD)")
-	fmt.Println("           Subcomandos: devkit sdd new <nombre>, devkit sdd status")
+	fmt.Println("           Subcomandos: subikit sdd new <nombre>, subikit sdd status")
 	fmt.Println("  mcp      Gestión de servidores MCP (Model Context Protocol)")
-	fmt.Println("           Subcomandos: devkit mcp list, devkit mcp install, devkit mcp doctor")
+	fmt.Println("           Subcomandos: subikit mcp list, subikit mcp install, subikit mcp doctor")
 	fmt.Println("  sync     Sincroniza y actualiza directrices con el catálogo embebido")
 	fmt.Println("  list     Muestra el catálogo completo de Agentes, Rules, Skills y MCPs")
 	fmt.Println("  doctor   Diagnostica el estado completo del entorno")
