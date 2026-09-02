@@ -14,12 +14,17 @@ import (
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/rules"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/skills"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/targets"
+	"github.com/santi-subidia/dev-kit-desarrollo/internal/tui"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/ui"
+	"github.com/santi-subidia/dev-kit-desarrollo/internal/updater"
 )
 
 var version = "0.4.0"
 
 func main() {
+	// Limpieza silenciosa de binarios .old generados en actualizaciones de Windows
+	updater.CleanupOld()
+
 	if len(os.Args) < 2 {
 		printUsage()
 		return
@@ -77,6 +82,14 @@ func main() {
 		handleMCP(mcpMgr, os.Args[2:])
 	case "agent":
 		handleAgent(agentsMgr, os.Args[2:])
+	case "skill":
+		handleSkill(skillsMgr, os.Args[2:])
+	case "rule":
+		handleRule(rulesMgr, os.Args[2:])
+	case "tui", "ui", "dashboard":
+		handleTUI(rulesMgr, skillsMgr, mcpMgr, agentsMgr, os.Args[2:])
+	case "update", "upgrade", "self-update":
+		handleUpdate(os.Args[2:])
 	case "version", "-v", "--version":
 		fmt.Printf("SubiKit CLI v%s\n", version)
 	case "help", "-h", "--help":
@@ -336,6 +349,18 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 			ui.Info(fmt.Sprintf("%s (%s): %s", status.Name, status.ID, status.Details))
 		}
 	}
+
+	// 4. Diagnóstico de Versión y Actualizaciones
+	ui.Section("Diagnóstico de Versión y Actualizaciones")
+	ui.Bullet("Versión Instalada", "v"+version)
+	res, err := updater.CheckLatest(version)
+	if err != nil {
+		ui.Warn(fmt.Sprintf("No se pudo comprobar actualizaciones en GitHub: %v", err))
+	} else if res.UpdateAvail {
+		ui.Warn(fmt.Sprintf("¡Actualización disponible en GitHub! %s -> %s (Ejecuta 'subikit update')", version, res.LatestVersion))
+	} else {
+		ui.Success(fmt.Sprintf("SubiKit está actualizado a la última versión pública (%s)", res.LatestVersion))
+	}
 	fmt.Println()
 }
 
@@ -382,6 +407,90 @@ func handleAgent(agentsMgr *agents.Manager, args []string) {
 
 	default:
 		ui.Error(fmt.Sprintf("Comando de agente no reconocido: '%s'", action))
+	}
+}
+
+func handleSkill(skillsMgr *skills.Manager, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Uso: subikit skill <list|show> [argumentos]")
+		fmt.Println()
+		fmt.Println("Comandos de Skills:")
+		fmt.Println("  list            Muestra todas las skills de ingeniería y frontend disponibles")
+		fmt.Println("  show <nombre>   Muestra la guía y directrices completas de la skill")
+		return
+	}
+
+	action := args[0]
+	switch action {
+	case "list":
+		ui.PrintBanner()
+		ui.Section("Catálogo de Skills Embebidas")
+		allSkills := skillsMgr.GetAll()
+		for _, s := range allSkills {
+			ui.Bullet(s.Metadata.Name, s.Metadata.Description)
+		}
+		fmt.Println()
+
+	case "show":
+		if len(args) < 2 {
+			ui.Error("Debes especificar el nombre de la skill. Ej: subikit skill show ui-craftsmanship")
+			return
+		}
+		name := args[1]
+		skill, ok := skillsMgr.GetSkill(name)
+		if !ok {
+			ui.Error(fmt.Sprintf("Skill '%s' no encontrada en el catálogo.", name))
+			return
+		}
+		ui.PrintBanner()
+		fmt.Printf("=== SKILL: %s ===\n\n", strings.ToUpper(skill.Metadata.Name))
+		fmt.Println(skill.Body)
+		fmt.Println()
+
+	default:
+		ui.Error(fmt.Sprintf("Comando de skill no reconocido: '%s'", action))
+	}
+}
+
+func handleRule(rulesMgr *rules.Manager, args []string) {
+	if len(args) < 1 {
+		fmt.Println("Uso: subikit rule <list|show> [argumentos]")
+		fmt.Println()
+		fmt.Println("Comandos de Reglas:")
+		fmt.Println("  list            Muestra todas las reglas de codificación disponibles")
+		fmt.Println("  show <nombre>   Muestra el contenido completo de la regla")
+		return
+	}
+
+	action := args[0]
+	switch action {
+	case "list":
+		ui.PrintBanner()
+		ui.Section("Catálogo de Reglas y Convenciones")
+		allRules := rulesMgr.GetAll()
+		for _, r := range allRules {
+			ui.Bullet(r.Metadata.Name, fmt.Sprintf("[%s] %s - %s", r.Metadata.Category, r.Metadata.Title, r.Metadata.Description))
+		}
+		fmt.Println()
+
+	case "show":
+		if len(args) < 2 {
+			ui.Error("Debes especificar el nombre de la regla. Ej: subikit rule show tailwind-css")
+			return
+		}
+		name := args[1]
+		rule, ok := rulesMgr.GetRule(name)
+		if !ok {
+			ui.Error(fmt.Sprintf("Regla '%s' no encontrada en el catálogo.", name))
+			return
+		}
+		ui.PrintBanner()
+		fmt.Printf("=== REGLA: %s (%s) [%s] ===\n\n", strings.ToUpper(rule.Metadata.Title), rule.Metadata.Name, rule.Metadata.Category)
+		fmt.Println(rule.Body)
+		fmt.Println()
+
+	default:
+		ui.Error(fmt.Sprintf("Comando de regla no reconocido: '%s'", action))
 	}
 }
 
@@ -560,15 +669,109 @@ func fileExists(path string) bool {
 	return !info.IsDir()
 }
 
+func handleUpdate(args []string) {
+	fs := flag.NewFlagSet("update", flag.ExitOnError)
+	checkOnly := fs.Bool("check", false, "Solo comprueba si existe una versión más reciente sin instalar")
+	force := fs.Bool("force", false, "Fuerza la reinstalación de la última versión")
+	autoYes := fs.Bool("y", false, "Acepta la actualización sin pedir confirmación interactiva")
+	fs.BoolVar(autoYes, "yes", false, "Acepta la actualización sin pedir confirmación interactiva")
+	fs.Parse(args)
+
+	ui.PrintBanner()
+	ui.Section("Actualizador de SubiKit")
+	ui.Info("Consultando últimos releases en GitHub...")
+
+	res, err := updater.CheckLatest(version)
+	if err != nil {
+		ui.Error(fmt.Sprintf("Error al consultar releases en GitHub: %v", err))
+		os.Exit(1)
+	}
+
+	if res.Release == nil {
+		ui.Warn("No se encontraron releases públicos disponibles en GitHub.")
+		return
+	}
+
+	ui.Bullet("Versión Local", "v"+version)
+	ui.Bullet("Último Release en GitHub", res.LatestVersion)
+
+	if *checkOnly {
+		if res.UpdateAvail {
+			ui.Warn(fmt.Sprintf("¡Nueva versión disponible (%s)! Ejecuta 'subikit update' para instalarla.", res.LatestVersion))
+		} else {
+			ui.Success("Tu versión de SubiKit está al día.")
+		}
+		return
+	}
+
+	if !res.UpdateAvail && !*force {
+		ui.Success(fmt.Sprintf("SubiKit ya está actualizado a la última versión disponible (%s).", "v"+version))
+		ui.Info("Usa 'subikit update --force' si deseas forzar la reinstalación del binario.")
+		return
+	}
+
+	ui.Section(fmt.Sprintf("Instalando SubiKit %s", res.LatestVersion))
+	if res.Release.Name != "" {
+		ui.Bullet("Nombre del Release", res.Release.Name)
+	}
+	if res.Release.Body != "" {
+		notes := strings.TrimSpace(res.Release.Body)
+		if len(notes) > 300 {
+			notes = notes[:300] + "..."
+		}
+		ui.Bullet("Notas de Versión", notes)
+	}
+
+	if !*autoYes {
+		fmt.Printf("\n¿Deseas descargar e instalar la versión %s ahora? [S/n]: ", res.LatestVersion)
+		var answer string
+		fmt.Scanln(&answer)
+		answer = strings.TrimSpace(strings.ToLower(answer))
+		if answer == "n" || answer == "no" {
+			ui.Info("Actualización cancelada por el usuario.")
+			return
+		}
+	}
+
+	fmt.Println()
+	err = updater.ApplyUpdate(res.Release, func(pct float64, status string) {
+		ui.Bullet(fmt.Sprintf("%3.0f%%", pct*100), status)
+	})
+
+	if err != nil {
+		ui.Error(fmt.Sprintf("Fallo al actualizar SubiKit: %v", err))
+		os.Exit(1)
+	}
+
+	fmt.Println()
+	ui.Success(fmt.Sprintf("¡SubiKit se ha actualizado exitosamente a %s!", res.LatestVersion))
+	ui.Info("Ejecuta 'subikit version' o 'subikit tui' para utilizar la nueva versión.")
+	fmt.Println()
+}
+
+func handleTUI(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mcp.Manager, agentsMgr *agents.Manager, args []string) {
+	if err := tui.RunTUI(rulesMgr, skillsMgr, mcpMgr, agentsMgr, version); err != nil {
+		ui.Error(fmt.Sprintf("Error al ejecutar la TUI interactiva: %v", err))
+		os.Exit(1)
+	}
+}
+
 func printUsage() {
 	ui.PrintBanner()
 	fmt.Println("Uso: subikit <comando> [opciones]")
 	fmt.Println()
 	fmt.Println("Comandos disponibles:")
+	fmt.Println("  tui      Inicia la interfaz de terminal interactiva (Dashboard & Glosario)")
 	fmt.Println("  init     Inicializa reglas, skills y agentes en el proyecto")
 	fmt.Println("           Opciones: --global, --force, --all, --path <dir>")
+	fmt.Println("  update   Comprueba y actualiza SubiKit a la última versión de GitHub Releases")
+	fmt.Println("           Opciones: --check, --force, -y")
 	fmt.Println("  agent    Gestión de Agentes y Subagentes (Orquestador y Especialistas)")
 	fmt.Println("           Subcomandos: subikit agent list, subikit agent show <nombre>")
+	fmt.Println("  skill    Gestión de Skills de Ingeniería y Frontend Craftsmanship")
+	fmt.Println("           Subcomandos: subikit skill list, subikit skill show <nombre>")
+	fmt.Println("  rule     Gestión de Reglas y Convenciones de Código")
+	fmt.Println("           Subcomandos: subikit rule list, subikit rule show <nombre>")
 	fmt.Println("  sdd      Gestión del flujo Spec-Driven Development (SDD)")
 	fmt.Println("           Subcomandos: subikit sdd new <nombre>, subikit sdd status")
 	fmt.Println("  mcp      Gestión de servidores MCP (Model Context Protocol)")
@@ -580,3 +783,4 @@ func printUsage() {
 	fmt.Println("  help     Muestra esta ayuda")
 	fmt.Println()
 }
+
