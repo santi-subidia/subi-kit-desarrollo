@@ -14,6 +14,7 @@ type Metadata struct {
 	Title       string   `yaml:"title"`
 	Type        string   `yaml:"type"` // "orchestrator" o "subagent"
 	Description string   `yaml:"description"`
+	Model       string   `yaml:"model,omitempty"` // Model to run the agent with (e.g. "pro", "flash", "inherit")
 	Tools       []string `yaml:"tools"`
 	Subagents   []string `yaml:"subagents"`
 }
@@ -54,4 +55,19 @@ func ParseAgent(raw []byte, relPath string) (*Agent, error) {
 		RawContent: rawStr,
 		RelPath:    relPath,
 	}, nil
+}
+
+// UpdateModel actualiza el modelo del agente y regenera el contenido RawContent.
+func (a *Agent) UpdateModel(model string) error {
+	a.Metadata.Model = model
+
+	var buf bytes.Buffer
+	encoder := yaml.NewEncoder(&buf)
+	encoder.SetIndent(2)
+	if err := encoder.Encode(a.Metadata); err != nil {
+		return err
+	}
+
+	a.RawContent = fmt.Sprintf("---\n%s---\n\n%s", buf.String(), a.Body)
+	return nil
 }

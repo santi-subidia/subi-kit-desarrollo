@@ -366,11 +366,12 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 
 func handleAgent(agentsMgr *agents.Manager, args []string) {
 	if len(args) < 1 {
-		fmt.Println("Uso: subikit agent <list|show> [argumentos]")
+		fmt.Println("Uso: subikit agent <list|show|set-model> [argumentos]")
 		fmt.Println()
 		fmt.Println("Comandos de Agentes:")
 		fmt.Println("  list            Muestra los roles y subagentes disponibles")
 		fmt.Println("  show <nombre>   Muestra las directrices completas del rol")
+		fmt.Println("  set-model <nombre> <modelo> Modifica el modelo de un agente local (inherit, flash_lite, flash, pro)")
 		return
 	}
 
@@ -404,6 +405,64 @@ func handleAgent(agentsMgr *agents.Manager, args []string) {
 		fmt.Printf("=== ROL: %s (%s) ===\n\n", strings.ToUpper(agent.Metadata.Title), agent.Metadata.Name)
 		fmt.Println(agent.Body)
 		fmt.Println()
+	case "set-model":
+		if len(args) < 3 {
+			ui.Error("Uso: subikit agent set-model <nombre> <modelo> [--global]")
+			return
+		}
+		name := args[1]
+		modelName := args[2]
+
+		validModels := map[string]bool{"inherit": true, "flash_lite": true, "flash": true, "pro": true}
+		if !validModels[modelName] {
+			ui.Error(fmt.Sprintf("Modelo '%s' no es válido. Opciones: inherit, flash_lite, flash, pro", modelName))
+			return
+		}
+
+		fs := flag.NewFlagSet("set-model", flag.ExitOnError)
+		isGlobal := fs.Bool("global", false, "Modifica el agente en la configuración global")
+		fs.Parse(args[3:])
+
+		var agentPath string
+		var err error
+
+		t := targets.NewAntigravityTarget()
+		if *isGlobal {
+			globalPath, errPath := t.GetGlobalRulesPath() // Returns ~/.gemini/config/rules. Better build it
+			if errPath != nil {
+				ui.Error(fmt.Sprintf("Error obteniendo ruta global: %v", errPath))
+				return
+			}
+			// GetGlobalRulesPath returns config/rules, we need config/agents
+			agentPath = filepath.Join(filepath.Dir(globalPath), "agents", name+".md")
+		} else {
+			absPath, _ := filepath.Abs(".")
+			agentPath = filepath.Join(t.GetProjectAgentsPath(absPath), name+".md")
+		}
+
+		data, err := os.ReadFile(agentPath)
+		if err != nil {
+			ui.Error(fmt.Sprintf("No se pudo leer el agente local en %s (¿ejecutaste 'subikit init'?): %v", agentPath, err))
+			return
+		}
+
+		agent, err := agents.ParseAgent(data, agentPath)
+		if err != nil {
+			ui.Error(fmt.Sprintf("Error al parsear el agente %s: %v", agentPath, err))
+			return
+		}
+
+		if err := agent.UpdateModel(modelName); err != nil {
+			ui.Error(fmt.Sprintf("Error actualizando modelo: %v", err))
+			return
+		}
+
+		if err := os.WriteFile(agentPath, []byte(agent.RawContent), 0644); err != nil {
+			ui.Error(fmt.Sprintf("Error guardando cambios en %s: %v", agentPath, err))
+			return
+		}
+
+		ui.Success(fmt.Sprintf("Modelo del agente '%s' actualizado a '%s' en %s", name, modelName, agentPath))
 
 	default:
 		ui.Error(fmt.Sprintf("Comando de agente no reconocido: '%s'", action))

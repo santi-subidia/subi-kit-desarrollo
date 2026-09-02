@@ -71,17 +71,18 @@ func GetCommandsData() []CommandDoc {
 		{
 			Name:        "agent",
 			Category:    "Catálogo & Roles",
-			Syntax:      "subikit agent <list | show <nombre>>",
+			Syntax:      "subikit agent <list | show <nombre> | set-model <nombre> <modelo>>",
 			Description: "Gestiona y permite inspeccionar los roles de IA disponibles en el catálogo (Orquestador y Subagentes especializados).",
 			Flags: []CommandFlag{
 				{Flag: "list", Description: "Muestra todos los agentes disponibles con su tipo y descripción."},
 				{Flag: "show <nombre>", Description: "Imprime las directrices y system prompt completo del agente."},
+				{Flag: "set-model <nombre> <modelo>", Description: "Modifica el modelo (inherit, flash_lite, flash, pro) del agente local."},
 			},
 			Examples: []string{
 				"subikit agent list",
 				"subikit agent show architect",
-				"subikit agent show orchestrator",
-				"subikit agent show frontend-specialist",
+				"subikit agent set-model architect pro",
+				"subikit agent set-model orchestrator flash --global",
 			},
 			Details: "Permite estudiar los roles definidos para delegar tareas a agentes especializados como el Arquitecto, QA/Testing, Diseñador Frontend, Especialista en Base de Datos o el Orquestador central.",
 		},
