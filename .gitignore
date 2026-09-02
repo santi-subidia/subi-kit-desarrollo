@@ -1,0 +1,17 @@
+# Binarios compilados
+/bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test y temporales
+*.test
+*.out
+/coverage.txt
+
+# IDEs
+.idea/
+.vscode/
+*.swp
