@@ -15,7 +15,9 @@ $env:GOARCH = "amd64"
 go build -ldflags "-s -w" -o bin/subikit ./cmd/subikit
 
 Remove-Item Env:\GOOS -ErrorAction SilentlyContinue
-Remove-Item Env:\GOARCH -ErrorAction SilentlyContinue
+# Instalar globalmente en entorno de desarrollo
+Write-Host "-> Instalando globalmente en PATH (go install)..."
+go install ./cmd/subikit
 
-Write-Host "`nCompilación exitosa en /bin!" -ForegroundColor Green
+Write-Host "`nCompilación e instalación global exitosa!" -ForegroundColor Green
 Get-ChildItem bin/

@@ -1,0 +1,76 @@
+name: Release SubiKit Multiplataforma
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del Repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: true
+
+      - name: Compilar Binarios Multiplataforma
+        run: |
+          mkdir -p dist
+          VERSION=${GITHUB_REF_NAME:-v0.4.0}
+          echo "Compilando versión $VERSION..."
+
+          # Windows amd64
+          GOOS=windows GOARCH=amd64 go build -ldflags "-s -w -X main.version=${VERSION#v}" -o subikit.exe ./cmd/subikit
+          zip -9 dist/subikit-windows-amd64.zip subikit.exe
+          rm -f subikit.exe
+
+          # Windows arm64
+          GOOS=windows GOARCH=arm64 go build -ldflags "-s -w -X main.version=${VERSION#v}" -o subikit.exe ./cmd/subikit
+          zip -9 dist/subikit-windows-arm64.zip subikit.exe
+          rm -f subikit.exe
+
+          # Linux amd64
+          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.version=${VERSION#v}" -o subikit ./cmd/subikit
+          tar -czvf dist/subikit-linux-amd64.tar.gz subikit
+          rm -f subikit
+
+          # Linux arm64
+          GOOS=linux GOARCH=arm64 go build -ldflags "-s -w -X main.version=${VERSION#v}" -o subikit ./cmd/subikit
+          tar -czvf dist/subikit-linux-arm64.tar.gz subikit
+          rm -f subikit
+
+          # macOS amd64 (Intel)
+          GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w -X main.version=${VERSION#v}" -o subikit ./cmd/subikit
+          tar -czvf dist/subikit-darwin-amd64.tar.gz subikit
+          rm -f subikit
+
+          # macOS arm64 (Apple Silicon M1/M2/M3/M4)
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-s -w -X main.version=${VERSION#v}" -o subikit ./cmd/subikit
+          tar -czvf dist/subikit-darwin-arm64.tar.gz subikit
+          rm -f subikit
+
+          # Generar Checksums SHA256
+          cd dist
+          sha256sum * > checksums.txt
+          cd ..
+          ls -la dist/
+
+      - name: Publicar GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
