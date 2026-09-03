@@ -23,12 +23,25 @@ func (t *AgnosticTarget) GenerateAgentsMD(projectRoot string, selectedRules []*r
 	builder.WriteString("# Directrices y Reglas del Proyecto (Dev-Kit)\n\n")
 	builder.WriteString("> Este archivo consolida las reglas activas de arquitectura, calidad y convenciones del proyecto.\n\n")
 
-	// Agrupar por categoría
+	// 1. Ubicar orchestrator-role primero si está presente
+	for _, r := range selectedRules {
+		if r.Metadata.Name == "orchestrator-role" {
+			builder.WriteString("## ROL PRINCIPAL: AGENTE ORQUESTADOR & TECH LEAD\n\n")
+			builder.WriteString(r.Body)
+			builder.WriteString("\n\n---\n\n")
+			break
+		}
+	}
+
+	// 2. Agrupar por categoría
 	byCat := make(map[string][]*rules.Rule)
 	var catOrder []string
 	seenCat := make(map[string]bool)
 
 	for _, r := range selectedRules {
+		if r.Metadata.Name == "orchestrator-role" {
+			continue
+		}
 		cat := r.Metadata.Category
 		if cat == "" {
 			cat = "general"

@@ -4,10 +4,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/agents"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/rules"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/skills"
+)
+
+const (
+	globalGeminiStartTag = "<!-- BEGIN SUBIKIT ORCHESTRATOR ROLE -->"
+	globalGeminiEndTag   = "<!-- END SUBIKIT ORCHESTRATOR ROLE -->"
 )
 
 // AntigravityTarget maneja la instalación de reglas, skills y agentes para Antigravity y Gemini CLI.
@@ -66,7 +72,64 @@ func (t *AntigravityTarget) InstallProject(projectRoot string, selectedRules []*
 	return writtenFiles, nil
 }
 
+// GenerateGeminiMD genera o sincroniza el archivo GEMINI.md consolidado con directrices y rol de orquestador.
+func (t *AntigravityTarget) GenerateGeminiMD(projectRoot string, selectedRules []*rules.Rule) (string, error) {
+	var builder strings.Builder
+
+	builder.WriteString("# Directrices del Proyecto para Antigravity & Asistentes de IA\n\n")
+	builder.WriteString("> Este archivo define las directrices maestras del proyecto y el rol permanente de Agente Orquestador.\n\n")
+
+	// 1. Ubicar orchestrator-role primero si está presente
+	for _, r := range selectedRules {
+		if r.Metadata.Name == "orchestrator-role" {
+			builder.WriteString(r.Body)
+			builder.WriteString("\n\n---\n\n")
+			break
+		}
+	}
+
+	// 2. Agrupar el resto por categoría
+	byCat := make(map[string][]*rules.Rule)
+	var catOrder []string
+	seenCat := make(map[string]bool)
+
+	for _, r := range selectedRules {
+		if r.Metadata.Name == "orchestrator-role" {
+			continue
+		}
+		cat := r.Metadata.Category
+		if cat == "" {
+			cat = "general"
+		}
+		if !seenCat[cat] {
+			seenCat[cat] = true
+			catOrder = append(catOrder, cat)
+		}
+		byCat[cat] = append(byCat[cat], r)
+	}
+
+	for _, cat := range catOrder {
+		builder.WriteString(fmt.Sprintf("## Módulo: %s\n\n", strings.ToUpper(cat)))
+		for _, r := range byCat[cat] {
+			builder.WriteString(fmt.Sprintf("### %s\n", r.Metadata.Title))
+			if r.Metadata.Description != "" {
+				builder.WriteString(fmt.Sprintf("_%s_\n\n", r.Metadata.Description))
+			}
+			builder.WriteString(r.Body)
+			builder.WriteString("\n\n---\n\n")
+		}
+	}
+
+	destPath := filepath.Join(projectRoot, "GEMINI.md")
+	if err := os.WriteFile(destPath, []byte(builder.String()), 0644); err != nil {
+		return "", fmt.Errorf("error al escribir GEMINI.md: %w", err)
+	}
+
+	return destPath, nil
+}
+
 // InstallGlobal instala rules, skills y agentes en la configuración global (~/.gemini/config/).
+// Además sincroniza de forma segura el rol de Orquestador en ~/.gemini/GEMINI.md.
 func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedSkills []*skills.Skill, selectedAgents []*agents.Agent, force bool) ([]string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -117,7 +180,70 @@ func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedS
 		writtenFiles = append(writtenFiles, destPath)
 	}
 
+	// Sincronizar GEMINI.md global para rol de Orquestador
+	var orchRule *rules.Rule
+	for _, r := range selectedRules {
+		if r.Metadata.Name == "orchestrator-role" {
+			orchRule = r
+			break
+		}
+	}
+	if orchRule != nil {
+		globalGemini, err := t.syncGlobalGeminiMD(homeDir, orchRule)
+		if err == nil && globalGemini != "" {
+			writtenFiles = append(writtenFiles, globalGemini)
+		}
+	}
+
 	return writtenFiles, nil
+}
+
+func (t *AntigravityTarget) syncGlobalGeminiMD(homeDir string, orchestratorRule *rules.Rule) (string, error) {
+	if orchestratorRule == nil {
+		return "", nil
+	}
+
+	geminiPath := filepath.Join(homeDir, ".gemini", "GEMINI.md")
+	block := fmt.Sprintf("%s\n## %s\n\n%s\n%s\n",
+		globalGeminiStartTag,
+		orchestratorRule.Metadata.Title,
+		orchestratorRule.Body,
+		globalGeminiEndTag,
+	)
+
+	existingBytes, err := os.ReadFile(geminiPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(filepath.Dir(geminiPath), 0755); err != nil {
+				return "", err
+			}
+			if err := os.WriteFile(geminiPath, []byte(block), 0644); err != nil {
+				return "", err
+			}
+			return geminiPath, nil
+		}
+		return "", err
+	}
+
+	content := string(existingBytes)
+	startIdx := strings.Index(content, globalGeminiStartTag)
+	endIdx := strings.Index(content, globalGeminiEndTag)
+
+	var newContent string
+	if startIdx != -1 && endIdx != -1 && endIdx > startIdx {
+		// Reemplazar bloque existente manteniendo el resto intacto
+		endPos := endIdx + len(globalGeminiEndTag)
+		newContent = content[:startIdx] + strings.TrimSpace(block) + content[endPos:]
+	} else {
+		// Anexar al final sin tocar los bloques previos (CodeGraph, Context7, Engram)
+		newContent = strings.TrimSpace(content) + "\n\n" + block
+	}
+
+	if err := os.WriteFile(geminiPath, []byte(newContent), 0644); err != nil {
+		return "", err
+	}
+
+	return geminiPath, nil
 }
 
 // GetProjectRulesPath retorna la ruta de reglas locales.

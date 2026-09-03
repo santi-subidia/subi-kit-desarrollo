@@ -167,6 +167,13 @@ func handleInit(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *a
 		os.Exit(1)
 	}
 
+	geminiFile, err := antigravityTarget.GenerateGeminiMD(absPath, selectedRules)
+	if err != nil {
+		ui.Warn(fmt.Sprintf("No se pudo generar GEMINI.md: %v", err))
+	} else {
+		written = append(written, geminiFile)
+	}
+
 	agentsFile, err := agnosticTarget.GenerateAgentsMD(absPath, selectedRules)
 	if err != nil {
 		ui.Warn(fmt.Sprintf("No se pudo generar AGENTS.md: %v", err))
@@ -190,7 +197,7 @@ func handleInit(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *a
 	}
 
 	fmt.Println()
-	ui.Info(fmt.Sprintf("Directrices listas en: %s/.agents/ y %s/AGENTS.md", absPath, absPath))
+	ui.Info(fmt.Sprintf("Directrices listas en: %s/.agents/, %s/GEMINI.md y %s/AGENTS.md", absPath, absPath, absPath))
 }
 
 func handleSync(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *agents.Manager, args []string) {
