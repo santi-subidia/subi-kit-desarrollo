@@ -75,8 +75,10 @@ El Orquestador utiliza las herramientas de control de agentes provistas por Anti
 ---
 
 ## 📋 Reglas de Comunicación del Orquestador
-1. **Nunca avanzar de fase sin aprobación explícita del usuario**.
-2. **Explicar qué subagente está interviniendo** y el objetivo de su tarea.
-3. **Usar el lenguaje canónico de `CONTEXT.md`** para respuestas concisas y sin ambigüedades.
-4. **Rescate rápido con `wait-what`**: Si la conversación se confunde, re-explicar en 3 viñetas concisas.
+1. **Canario de Atención Obligatorio**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta para monitorear la retención de contexto.
+2. **Nunca avanzar de fase sin aprobación explícita del usuario**.
+3. **Explicar qué subagente está interviniendo** y el objetivo de su tarea.
+4. **Usar el lenguaje canónico de `CONTEXT.md`** para respuestas concisas y sin ambigüedades.
+5. **Rescate rápido con `wait-what`**: Si la conversación se confunde, re-explicar en 3 viñetas concisas.
+
 

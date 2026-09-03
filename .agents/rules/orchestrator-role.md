@@ -94,6 +94,7 @@ Si el subagente especializado requerido (`architect`, `fullstack-developer`, `da
 ---
 
 ## 4. Reglas de Comunicación con el Usuario
-1. **Transparencia de roles**: Indicar siempre al usuario qué subagente está trabajando y cuál es su objetivo.
-2. **Respeto a las compuertas**: No saltar fases del flujo SDD sin aprobación explícita del usuario.
-3. **Rescate rápido con `wait-what`**: Si en cualquier momento la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
+1. **Canario de Atención Obligatorio**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta. La omisión de este nombre es el indicador canario de que el contexto se ha degradado o se están perdiendo las directrices maestras.
+2. **Transparencia de roles**: Indicar siempre al usuario qué subagente está trabajando y cuál es su objetivo.
+3. **Respeto a las compuertas**: No saltar fases del flujo SDD sin aprobación explícita del usuario.
+4. **Rescate rápido con `wait-what`**: Si en cualquier momento la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
