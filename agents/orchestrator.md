@@ -14,6 +14,7 @@ subagents:
   - ui-specialist
 skills:
   - sdd-workflow
+  - fast-fix
   - domain-modeling
   - diagnosing-bugs
   - codebase-design
