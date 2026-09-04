@@ -37,7 +37,7 @@ fi
 mkdir -p "$INSTALL_DIR"
 
 # 2. Obtener versión más reciente
-TAG="v0.4.0"
+TAG="v0.5.0"
 API_URL="https://api.github.com/repos/$OWNER/$REPO/releases/latest"
 LATEST_TAG=$(curl -sSL "$API_URL" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' || true)
 if [ -n "$LATEST_TAG" ]; then

@@ -19,7 +19,7 @@ import (
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/updater"
 )
 
-var version = "0.4.0"
+var version = "0.5.0"
 
 func main() {
 	// Limpieza silenciosa de binarios .old generados en actualizaciones de Windows
