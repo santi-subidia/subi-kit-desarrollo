@@ -23,7 +23,7 @@ func PrintBanner() {
   / __/ /  __  / /    (_) /__(_) /_
  _\ \/ _ \/ /_/ /    / /  '_/ / __/
 /___/____/\____/____/_/_/\_\_/\__/ 
-              /_____/              ` + colorReset + colorMagenta + `(v0.5.0)` + colorReset)
+              /_____/              ` + colorReset + colorMagenta + `(v0.5.1)` + colorReset)
 	fmt.Println(colorDim + " SubiKit: Dev-Kit Personalizado para Desarrollo con IA" + colorReset)
 	fmt.Println()
 }

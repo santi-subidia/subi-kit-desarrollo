@@ -27,7 +27,7 @@ jobs:
       - name: Compilar Binarios Multiplataforma
         run: |
           mkdir -p dist
-          VERSION=${GITHUB_REF_NAME:-v0.5.0}
+          VERSION=${GITHUB_REF_NAME:-v0.5.1}
           echo "Compilando versión $VERSION..."
 
           # Windows amd64

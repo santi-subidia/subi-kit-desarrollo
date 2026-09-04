@@ -18,7 +18,7 @@ if (-not (Test-Path $installDir)) {
 }
 
 # 2. Obtener la última versión disponible
-$tag = "v0.5.0"
+$tag = "v0.5.1"
 try {
     $apiUrl = "https://api.github.com/repos/$owner/$repo/releases/latest"
     $release = Invoke-RestMethod -Uri $apiUrl -Headers @{ "User-Agent" = "SubiKit-Installer" } -ErrorAction SilentlyContinue
@@ -27,7 +27,7 @@ try {
     }
 } catch {
     # Fallback a release conocido
-    $tag = "v0.5.0"
+    $tag = "v0.5.1"
 }
 
 # 3. Determinar arquitectura
