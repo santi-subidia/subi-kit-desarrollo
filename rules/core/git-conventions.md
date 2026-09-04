@@ -33,3 +33,15 @@ Los mensajes de commit deben seguir el estándar:
 - Realizar commits atómicos y cohesionados: cada commit debe representar un cambio lógico único.
 - Nunca commitear credenciales, variables `.env` privadas o archivos temporales/artefactos de build.
 - Verificar el estado con `git status` y `git diff` antes de commitear.
+
+## 3. Exclusiones Obligatorias en .gitignore (Herramientas, MCPs y Secretos)
+Es obligatorio que todo repositorio configure y respete las siguientes exclusiones en su archivo `.gitignore`:
+- **Directorio de CodeGraph (`.codegraph/`)**: Directorio generado por el servidor MCP CodeGraph para indexar símbolos y relaciones de código. **Está terminantemente prohibido incluirlo o commitearlo**. Debe permanecer siempre ignorado a nivel local.
+- **Variables de Entorno y Secretos**: Archivos `.env`, `.env.*`, `.env.local`, `.env.production` (solo se permite versionar `.env.example` o `.env.template` sin valores reales).
+- **Archivos de Claves y Certificados**: Llaves privadas, certificados (`*.pem`, `*.key`, `*.pfx`, `*.keystore`).
+- **Cachés y Artefactos de Agentes/MCPs**: Directorios de cachés locales generados por herramientas de IA o extensiones.
+- **Artefactos de Compilación y Dependencias**: `node_modules/`, `bin/`, `dist/`, `build/`, `*.exe`, `vendor/`.
+
+> [!CAUTION]
+> **Verificación Previa**: Antes de realizar cualquier commit o staging (`git add`), el agente debe verificar activamente que `.codegraph/` y los archivos `.env*` no figuren en los archivos trackeados ni en el stage. Si `.codegraph/` no está en `.gitignore`, el agente debe incorporarlo de inmediato.
+

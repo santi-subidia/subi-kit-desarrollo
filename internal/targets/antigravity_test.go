@@ -105,3 +105,37 @@ func TestSyncGlobalGeminiMD(t *testing.T) {
 		t.Errorf("expected exactly 1 tag block, got count %d", strings.Count(string(data), globalGeminiStartTag))
 	}
 }
+
+func TestEnsureGitignore(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "subikit-gitignore-test-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	target := NewAntigravityTarget()
+
+	// 1. Create on non-existent .gitignore
+	if err := target.EnsureGitignore(tempDir); err != nil {
+		t.Fatalf("EnsureGitignore failed: %v", err)
+	}
+
+	content, err := os.ReadFile(tempDir + "/.gitignore")
+	if err != nil {
+		t.Fatalf("failed to read .gitignore: %v", err)
+	}
+	if !strings.Contains(string(content), ".codegraph/") {
+		t.Errorf("expected .codegraph/ in .gitignore, got: %s", string(content))
+	}
+
+	// 2. Idempotent check on existing .gitignore
+	if err := target.EnsureGitignore(tempDir); err != nil {
+		t.Fatalf("EnsureGitignore failed on second run: %v", err)
+	}
+
+	content2, _ := os.ReadFile(tempDir + "/.gitignore")
+	if strings.Count(string(content2), ".codegraph/") != 1 {
+		t.Errorf("expected exactly 1 .codegraph/ occurrence, got: %s", string(content2))
+	}
+}
+

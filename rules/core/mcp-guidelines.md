@@ -33,6 +33,7 @@ Como agente, tienes acceso a servidores MCP (Model Context Protocol) que extiend
 3. Si el índice no existe, invoca la herramienta de inicialización (ej. `codegraph init <project-root>`) para crear el índice.
 4. Llama a la herramienta `codegraph_explore` para explorar los símbolos y flujos de llamadas.
 5. **Solo como respaldo**: Pasa a usar herramientas de sistema de archivos normales (Grep/Read) únicamente si la inicialización o consulta de CodeGraph falla, explicando brevemente el fallo.
+6. **Aislamiento en Git**: El directorio `.codegraph/` generado para indexar el repositorio es de uso exclusivamente local. **Debe estar siempre incluido en `.gitignore` y jamás debe incluirse en commits**.
 
 ## 3. Engram (Memoria Persistente)
 

@@ -272,6 +272,17 @@ Los mensajes de commit deben seguir el estándar:
 - Nunca commitear credenciales, variables `.env` privadas o archivos temporales/artefactos de build.
 - Verificar el estado con `git status` y `git diff` antes de commitear.
 
+## 3. Exclusiones Obligatorias en .gitignore (Herramientas, MCPs y Secretos)
+Es obligatorio que todo repositorio configure y respete las siguientes exclusiones en su archivo `.gitignore`:
+- **Directorio de CodeGraph (`.codegraph/`)**: Directorio generado por el servidor MCP CodeGraph para indexar símbolos y relaciones de código. **Está terminantemente prohibido incluirlo o commitearlo**. Debe permanecer siempre ignorado a nivel local.
+- **Variables de Entorno y Secretos**: Archivos `.env`, `.env.*`, `.env.local`, `.env.production` (solo se permite versionar `.env.example` o `.env.template` sin valores reales).
+- **Archivos de Claves y Certificados**: Llaves privadas, certificados (`*.pem`, `*.key`, `*.pfx`, `*.keystore`).
+- **Cachés y Artefactos de Agentes/MCPs**: Directorios de cachés locales generados por herramientas de IA o extensiones.
+- **Artefactos de Compilación y Dependencias**: `node_modules/`, `bin/`, `dist/`, `build/`, `*.exe`, `vendor/`.
+
+> [!CAUTION]
+> **Verificación Previa**: Antes de realizar cualquier commit o staging (`git add`), el agente debe verificar activamente que `.codegraph/` y los archivos `.env*` no figuren en los archivos trackeados ni en el stage. Si `.codegraph/` no está en `.gitignore`, el agente debe incorporarlo de inmediato.
+
 ---
 
 ### Protocolos de Uso de MCPs (Context7, CodeGraph, Engram)
@@ -303,6 +314,7 @@ Como agente, tienes acceso a servidores MCP (Model Context Protocol) que extiend
 3. Si el índice no existe, invoca la herramienta de inicialización (ej. `codegraph init <project-root>`) para crear el índice.
 4. Llama a la herramienta `codegraph_explore` para explorar los símbolos y flujos de llamadas.
 5. **Solo como respaldo**: Pasa a usar herramientas de sistema de archivos normales (Grep/Read) únicamente si la inicialización o consulta de CodeGraph falla, explicando brevemente el fallo.
+6. **Aislamiento en Git**: El directorio `.codegraph/` generado para indexar el repositorio es de uso exclusivamente local. **Debe estar siempre incluido en `.gitignore` y jamás debe incluirse en commits**.
 
 ## 3. Engram (Memoria Persistente)
 

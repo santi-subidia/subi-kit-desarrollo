@@ -69,7 +69,37 @@ func (t *AntigravityTarget) InstallProject(projectRoot string, selectedRules []*
 		writtenFiles = append(writtenFiles, destPath)
 	}
 
+	// 4. Asegurar que .codegraph/ esté en .gitignore
+	if err := t.EnsureGitignore(projectRoot); err == nil {
+		writtenFiles = append(writtenFiles, filepath.Join(projectRoot, ".gitignore"))
+	}
+
 	return writtenFiles, nil
+}
+
+// EnsureGitignore verifica y añade .codegraph/ al archivo .gitignore del proyecto si no está presente.
+func (t *AntigravityTarget) EnsureGitignore(projectRoot string) error {
+	gitignorePath := filepath.Join(projectRoot, ".gitignore")
+	var existingContent string
+
+	data, err := os.ReadFile(gitignorePath)
+	if err == nil {
+		existingContent = string(data)
+		if strings.Contains(existingContent, ".codegraph/") || strings.Contains(existingContent, ".codegraph") {
+			return nil
+		}
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
+	var toAppend string
+	if existingContent == "" {
+		toAppend = "# Dev-Kit y MCPs\n.codegraph/\n"
+	} else {
+		toAppend = strings.TrimRight(existingContent, "\r\n") + "\n\n# Dev-Kit y MCPs\n.codegraph/\n"
+	}
+
+	return os.WriteFile(gitignorePath, []byte(toAppend), 0644)
 }
 
 // GenerateGeminiMD genera o sincroniza el archivo GEMINI.md consolidado con directrices y rol de orquestador.
