@@ -10,6 +10,7 @@ skills:
   - sdd-workflow
   - diagnosing-bugs
   - codebase-design
+  - dotnet-hardening
 ---
 
 # Subagente: Desarrollador Full-Stack

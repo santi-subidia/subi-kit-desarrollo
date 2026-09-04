@@ -60,6 +60,7 @@ Compilado como un **único binario en Go** (sin dependencias de Node.js o Python
 | **`codebase-design`** | Vocabulario de diseño de software: *Deep Modules*, *Seams* de desacoplamiento y práctica *Design It Twice*. |
 | **`wayfinder`** | Planificación de iniciativas masivas (Epics) mediante mapas de decisiones y grafos de tareas desbloqueables. |
 | **`wait-what`** | Comando de freno de mano y re-enfoque cuando el asistente genera explicaciones confusas o verbosas. |
+| **`dotnet-hardening`** | Optimización de consultas EF Core (sargabilidad, zero N+1, AsSplitQuery), rendimiento C# (Zero Sync-over-Async, Span, ArrayPool), higiene MSBuild y aserciones rigurosas de tests. |
 
 ---
 

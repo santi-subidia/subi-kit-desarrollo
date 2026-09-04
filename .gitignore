@@ -16,3 +16,4 @@
 .vscode/
 *.swp
 .codegraph/
+.env*
