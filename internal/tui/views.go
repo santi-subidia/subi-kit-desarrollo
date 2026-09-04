@@ -379,8 +379,26 @@ func RenderDoctorView(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr
 	}
 
 	agentsMDPath := filepath.Join(absPath, "AGENTS.md")
+	geminiMDPath := filepath.Join(absPath, "GEMINI.md")
+
+	hasAgents := false
 	if _, err := os.Stat(agentsMDPath); err == nil {
-		sb.WriteString(fmt.Sprintf("  %s AGENTS.md agnóstico presente en la raíz del proyecto.\n", BadgeSuccessStyle.Render("OK")))
+		hasAgents = true
+	}
+	hasGemini := false
+	if _, err := os.Stat(geminiMDPath); err == nil {
+		hasGemini = true
+	}
+
+	if hasAgents && hasGemini {
+		sb.WriteString(fmt.Sprintf("  %s ¡Conflicto de directrices! Coexisten AGENTS.md y GEMINI.md (duplica tokens en Antigravity). Ejecuta 'subikit sync'.\n", BadgeDangerStyle.Render("CONFLICTO")))
+	} else if hasAgents {
+		if data, err := os.ReadFile(agentsMDPath); err == nil {
+			estTokens := len(data) / 4
+			sb.WriteString(fmt.Sprintf("  %s AGENTS.md universal presente (~%d tokens estimados).\n", BadgeSuccessStyle.Render("OK"), estTokens))
+		} else {
+			sb.WriteString(fmt.Sprintf("  %s AGENTS.md universal presente en la raíz del proyecto.\n", BadgeSuccessStyle.Render("OK")))
+		}
 	} else {
 		sb.WriteString(fmt.Sprintf("  %s AGENTS.md no encontrado en la raíz.\n", BadgeWarnStyle.Render("AVISO")))
 	}

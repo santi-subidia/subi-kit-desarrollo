@@ -139,3 +139,116 @@ func TestEnsureGitignore(t *testing.T) {
 	}
 }
 
+func TestCleanupLegacyGeminiMD(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "subikit-cleanup-gemini-test-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	target := NewAntigravityTarget()
+
+	// 1. When GEMINI.md doesn't exist, should return false, nil
+	cleaned, err := target.CleanupLegacyGeminiMD(tempDir)
+	if err != nil {
+		t.Fatalf("unexpected error when file does not exist: %v", err)
+	}
+	if cleaned {
+		t.Errorf("expected cleaned to be false, got true")
+	}
+
+	// 2. When GEMINI.md exists, should remove it and return true, nil
+	geminiPath := tempDir + "/GEMINI.md"
+	if err := os.WriteFile(geminiPath, []byte("# Legacy rules"), 0644); err != nil {
+		t.Fatalf("failed to write test GEMINI.md: %v", err)
+	}
+
+	cleaned, err = target.CleanupLegacyGeminiMD(tempDir)
+	if err != nil {
+		t.Fatalf("unexpected error when removing file: %v", err)
+	}
+	if !cleaned {
+		t.Errorf("expected cleaned to be true, got false")
+	}
+
+	// Verify file is gone
+	if _, err := os.Stat(geminiPath); !os.IsNotExist(err) {
+		t.Errorf("expected GEMINI.md to be deleted, but still exists")
+	}
+
+	// 3. Second run should return false, nil (idempotent)
+	cleaned, err = target.CleanupLegacyGeminiMD(tempDir)
+	if err != nil || cleaned {
+		t.Errorf("expected cleaned to be false on second run, got cleaned=%v, err=%v", cleaned, err)
+	}
+}
+
+func TestCleanupLegacySubagents(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "subikit-cleanup-subagents-test-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	target := NewAntigravityTarget()
+
+	// 1. When .agents/subagents does not exist
+	cleaned, err := target.CleanupLegacySubagents(tempDir)
+	if err != nil || cleaned {
+		t.Fatalf("expected cleaned=false, got %v, err=%v", cleaned, err)
+	}
+
+	// 2. When .agents/subagents exists
+	legacyDir := tempDir + "/.agents/subagents"
+	if err := os.MkdirAll(legacyDir, 0755); err != nil {
+		t.Fatalf("failed to create legacy dir: %v", err)
+	}
+	_ = os.WriteFile(legacyDir+"/architect.md", []byte("legacy"), 0644)
+
+	cleaned, err = target.CleanupLegacySubagents(tempDir)
+	if err != nil || !cleaned {
+		t.Fatalf("expected cleaned=true, got %v, err=%v", cleaned, err)
+	}
+
+	if _, err := os.Stat(legacyDir); !os.IsNotExist(err) {
+		t.Errorf("expected legacy dir to be removed")
+	}
+}
+
+func TestRemoveLocalRedundantAgents(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "subikit-remove-redundant-agents-*")
+	if err != nil {
+		t.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	target := NewAntigravityTarget()
+
+	// 1. When directory does not exist
+	removed, err := target.RemoveLocalRedundantAgents(tempDir)
+	if err != nil || removed != 0 {
+		t.Fatalf("expected removed=0, got %d, err=%v", removed, err)
+	}
+
+	// 2. When agents exist
+	agentsDir := tempDir + "/.agents/agents"
+	if err := os.MkdirAll(agentsDir, 0755); err != nil {
+		t.Fatalf("failed to create agents dir: %v", err)
+	}
+	_ = os.WriteFile(agentsDir+"/architect.md", []byte("arch"), 0644)
+	_ = os.WriteFile(agentsDir+"/fullstack.md", []byte("fullstack"), 0644)
+
+	removed, err = target.RemoveLocalRedundantAgents(tempDir)
+	if err != nil || removed != 2 {
+		t.Fatalf("expected removed=2, got %d, err=%v", removed, err)
+	}
+
+	// Check that directory is gone or empty
+	entries, _ := os.ReadDir(agentsDir)
+	if len(entries) != 0 {
+		t.Errorf("expected 0 entries in agents dir, got %d", len(entries))
+	}
+}
+
+
+

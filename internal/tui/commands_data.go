@@ -71,20 +71,22 @@ func GetCommandsData() []CommandDoc {
 		{
 			Name:        "agent",
 			Category:    "Catálogo & Roles",
-			Syntax:      "subikit agent <list | show <nombre> | set-model <nombre> <modelo>>",
-			Description: "Gestiona y permite inspeccionar los roles de IA disponibles en el catálogo (Orquestador y Subagentes especializados).",
+			Syntax:      "subikit agent <list | show <nombre> | dedup | set-model <nombre> <modelo>>",
+			Description: "Gestiona, inspecciona y des-duplica los roles de IA disponibles en el catálogo (Orquestador y Subagentes especializados).",
 			Flags: []CommandFlag{
 				{Flag: "list", Description: "Muestra todos los agentes disponibles con su tipo y descripción."},
 				{Flag: "show <nombre>", Description: "Imprime las directrices y system prompt completo del agente."},
+				{Flag: "dedup [--path <dir>]", Description: "Sanea agentes locales redundantes si ya existen globalmente, evitando duplicación en Antigravity."},
 				{Flag: "set-model <nombre> <modelo>", Description: "Modifica el modelo (inherit, flash_lite, flash, pro) del agente local."},
 			},
 			Examples: []string{
 				"subikit agent list",
 				"subikit agent show architect",
+				"subikit agent dedup",
 				"subikit agent set-model architect pro",
 				"subikit agent set-model orchestrator flash --global",
 			},
-			Details: "Permite estudiar los roles definidos para delegar tareas a agentes especializados como el Arquitecto, QA/Testing, Diseñador Frontend, Especialista en Base de Datos o el Orquestador central.",
+			Details: "Permite estudiar los roles definidos para delegar tareas a agentes especializados como el Arquitecto, QA/Testing, Diseñador Frontend, Especialista en Base de Datos o el Orquestador central, y sanear duplicaciones entre local y global.",
 		},
 		{
 			Name:        "skill",
@@ -244,7 +246,7 @@ func GetGlossaryTerms() []GlossaryTerm {
 			Term:     "AGENTS.md",
 			Category: "Compatibilidad",
 			Summary:  "Archivo estándar agnóstico en la raíz del proyecto para cualquier herramienta de IA.",
-			Explanation: "Aunque Antigravity utiliza la estructura .agents/, SubiKit también genera un AGENTS.md en la raíz del proyecto para que otras herramientas (Claude Desktop, Cursor, Aider, Copilot, etc.) puedan leer y respetar automáticamente las mismas reglas.",
+			Explanation: "AGENTS.md es el estándar universal consolidado en la raíz del proyecto. Antigravity, Cursor, Claude Code, Windsurf, Aider y Copilot lo leen y respetan de forma nativa, evitando la duplicación de tokens que ocurría al coexistir con archivos como GEMINI.md.",
 		},
 	}
 }

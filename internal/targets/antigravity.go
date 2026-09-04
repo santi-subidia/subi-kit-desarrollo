@@ -158,6 +158,24 @@ func (t *AntigravityTarget) GenerateGeminiMD(projectRoot string, selectedRules [
 	return destPath, nil
 }
 
+// CleanupLegacyGeminiMD detecta y elimina de forma segura un archivo GEMINI.md en la raíz del proyecto
+// para evitar que Antigravity duplique el contexto y desborde el presupuesto de tokens junto con AGENTS.md.
+func (t *AntigravityTarget) CleanupLegacyGeminiMD(projectRoot string) (bool, error) {
+	geminiPath := filepath.Join(projectRoot, "GEMINI.md")
+	if _, err := os.Stat(geminiPath); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	if err := os.Remove(geminiPath); err != nil {
+		return false, fmt.Errorf("no se pudo eliminar GEMINI.md legacy: %w", err)
+	}
+
+	return true, nil
+}
+
 // InstallGlobal instala rules, skills y agentes en la configuración global (~/.gemini/config/).
 // Además sincroniza de forma segura el rol de Orquestador en ~/.gemini/GEMINI.md.
 func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedSkills []*skills.Skill, selectedAgents []*agents.Agent, force bool) ([]string, error) {
@@ -299,3 +317,78 @@ func (t *AntigravityTarget) GetGlobalRulesPath() (string, error) {
 	}
 	return filepath.Join(homeDir, ".gemini", "config", "rules"), nil
 }
+
+// GetGlobalAgentsPath retorna la ruta de agentes globales en ~/.gemini/config/agents.
+func (t *AntigravityTarget) GetGlobalAgentsPath() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(homeDir, ".gemini", "config", "agents"), nil
+}
+
+// HasGlobalAgents verifica si ya existen agentes instalados en la configuración global (~/.gemini/config/agents).
+func (t *AntigravityTarget) HasGlobalAgents() (bool, error) {
+	globalDir, err := t.GetGlobalAgentsPath()
+	if err != nil {
+		return false, err
+	}
+	entries, err := os.ReadDir(globalDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".md") {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// CleanupLegacySubagents detecta y elimina directorios obsoletos como .agents/subagents/
+// para evitar que Antigravity indexe múltiples carpetas con los mismos subagentes.
+func (t *AntigravityTarget) CleanupLegacySubagents(projectRoot string) (bool, error) {
+	legacyDir := filepath.Join(projectRoot, ".agents", "subagents")
+	if _, err := os.Stat(legacyDir); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	if err := os.RemoveAll(legacyDir); err != nil {
+		return false, fmt.Errorf("no se pudo eliminar directorio legacy %s: %w", legacyDir, err)
+	}
+	return true, nil
+}
+
+// RemoveLocalRedundantAgents elimina los archivos de agentes locales en .agents/agents/
+// cuando ya están disponibles globalmente en ~/.gemini/config/agents/, evitando que Antigravity duplique el catálogo.
+func (t *AntigravityTarget) RemoveLocalRedundantAgents(projectRoot string) (int, error) {
+	localAgentsDir := filepath.Join(projectRoot, ".agents", "agents")
+	entries, err := os.ReadDir(localAgentsDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	removed := 0
+	for _, e := range entries {
+		if !e.IsDir() && strings.HasSuffix(e.Name(), ".md") {
+			filePath := filepath.Join(localAgentsDir, e.Name())
+			if err := os.Remove(filePath); err == nil {
+				removed++
+			}
+		}
+	}
+
+	// Si el directorio quedó vacío, intentar removerlo
+	_ = os.Remove(localAgentsDir)
+
+	return removed, nil
+}
+

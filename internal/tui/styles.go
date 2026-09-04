@@ -110,6 +110,12 @@ var (
 			Background(ColorWarning).
 			Padding(0, 1)
 
+	BadgeDangerStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("#1a1b26")).
+			Background(ColorDanger).
+			Padding(0, 1)
+
 	BadgeAgentStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.Color("#1a1b26")).

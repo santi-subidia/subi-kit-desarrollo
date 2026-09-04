@@ -19,7 +19,7 @@ import (
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/updater"
 )
 
-var version = "0.5.0"
+var version = "0.5.1"
 
 func main() {
 	// Limpieza silenciosa de binarios .old generados en actualizaciones de Windows
@@ -106,6 +106,7 @@ func handleInit(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *a
 	isGlobal := fs.Bool("global", false, "Instala las directrices en la configuración global de la máquina")
 	force := fs.Bool("force", false, "Sobrescribe reglas existentes sin preguntar")
 	includeAll := fs.Bool("all", false, "Instala todas las reglas del catálogo sin importar el stack")
+	localAgents := fs.Bool("local-agents", false, "Fuerza la copia de agentes en .agents/agents/ aunque ya existan globalmente")
 	targetPath := fs.String("path", ".", "Ruta del proyecto destino")
 	fs.Parse(args)
 
@@ -160,20 +161,33 @@ func handleInit(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *a
 		selectedRules = rulesMgr.MatchRules(stack.Tags, true)
 	}
 
+	// Limpieza de carpetas obsoletas (.agents/subagents/)
+	if cleaned, err := antigravityTarget.CleanupLegacySubagents(absPath); err == nil && cleaned {
+		ui.Info("Carpeta obsoleta .agents/subagents/ eliminada para evitar duplicación de subagentes en Antigravity.")
+	}
+
+	// Comprobar si ya existen agentes globales para no duplicarlos localmente por defecto
+	hasGlobalAgents, _ := antigravityTarget.HasGlobalAgents()
+	var agentsToInstall []*agents.Agent
+	if *localAgents || !hasGlobalAgents {
+		agentsToInstall = allAgents
+	} else {
+		ui.Info("Agentes del dev-kit detectados en configuración global (~/.gemini/config/agents/). Se omite copia local para evitar duplicación en Antigravity (usa -local-agents para forzar).")
+	}
+
 	ui.Section("Inyección de Reglas, Skills & Agentes")
-	written, err := antigravityTarget.InstallProject(absPath, selectedRules, allSkills, allAgents, *force)
+	written, err := antigravityTarget.InstallProject(absPath, selectedRules, allSkills, agentsToInstall, *force)
 	if err != nil {
 		ui.Error(fmt.Sprintf("Error al escribir directrices de Antigravity: %v", err))
 		os.Exit(1)
 	}
 
-	geminiFile, err := antigravityTarget.GenerateGeminiMD(absPath, selectedRules)
-	if err != nil {
-		ui.Warn(fmt.Sprintf("No se pudo generar GEMINI.md: %v", err))
-	} else {
-		written = append(written, geminiFile)
+	// 1. Limpieza de GEMINI.md legacy si existe para evitar duplicación de tokens con AGENTS.md
+	if cleaned, err := antigravityTarget.CleanupLegacyGeminiMD(absPath); err == nil && cleaned {
+		ui.Info("Archivo GEMINI.md legacy eliminado de la raíz del proyecto para evitar duplicación de tokens con AGENTS.md en Antigravity.")
 	}
 
+	// 2. Generar AGENTS.md como único archivo consolidado universal (leído por Antigravity, Cursor, Claude Code, etc.)
 	agentsFile, err := agnosticTarget.GenerateAgentsMD(absPath, selectedRules)
 	if err != nil {
 		ui.Warn(fmt.Sprintf("No se pudo generar AGENTS.md: %v", err))
@@ -181,31 +195,40 @@ func handleInit(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *a
 		written = append(written, agentsFile)
 	}
 
-	ui.Success(fmt.Sprintf("Configuradas %d reglas, %d skills y %d agentes:", len(selectedRules), len(allSkills), len(allAgents)))
+	ui.Success(fmt.Sprintf("Configuradas %d reglas, %d skills y %d agentes locales:", len(selectedRules), len(allSkills), len(agentsToInstall)))
 	for _, r := range selectedRules {
 		ui.Bullet("Regla ["+r.Metadata.Category+"]", fmt.Sprintf("%s (%s)", r.Metadata.Title, r.Metadata.Name))
 	}
 	for _, s := range allSkills {
 		ui.Bullet("Skill", fmt.Sprintf("%s (%s)", s.Metadata.Name, s.Metadata.Description))
 	}
-	for _, a := range allAgents {
-		tipo := "Subagente"
-		if a.Metadata.Type == "orchestrator" {
-			tipo = "Orquestador"
+	if len(agentsToInstall) > 0 {
+		for _, a := range agentsToInstall {
+			tipo := "Subagente"
+			if a.Metadata.Type == "orchestrator" {
+				tipo = "Orquestador"
+			}
+			ui.Bullet("Agente ["+tipo+"]", fmt.Sprintf("%s (%s)", a.Metadata.Title, a.Metadata.Name))
 		}
-		ui.Bullet("Agente ["+tipo+"]", fmt.Sprintf("%s (%s)", a.Metadata.Title, a.Metadata.Name))
+	} else {
+		ui.Bullet("Agentes", "Activos vía configuración global de Antigravity (~/.gemini/config/agents/)")
 	}
 
 	fmt.Println()
-	ui.Info(fmt.Sprintf("Directrices listas en: %s/.agents/, %s/GEMINI.md y %s/AGENTS.md", absPath, absPath, absPath))
+	ui.Info(fmt.Sprintf("Directrices listas en: %s/.agents/ y %s/AGENTS.md", absPath, absPath))
 }
 
 func handleSync(rulesMgr *rules.Manager, skillsMgr *skills.Manager, agentsMgr *agents.Manager, args []string) {
 	fs := flag.NewFlagSet("sync", flag.ExitOnError)
 	targetPath := fs.String("path", ".", "Ruta del proyecto a sincronizar")
+	localAgents := fs.Bool("local-agents", false, "Fuerza la copia de agentes en .agents/agents/ aunque ya existan globalmente")
 	fs.Parse(args)
 
-	handleInit(rulesMgr, skillsMgr, agentsMgr, []string{"-path", *targetPath, "-force"})
+	initArgs := []string{"-path", *targetPath, "-force"}
+	if *localAgents {
+		initArgs = append(initArgs, "-local-agents")
+	}
+	handleInit(rulesMgr, skillsMgr, agentsMgr, initArgs)
 }
 
 func handleList(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mcp.Manager, agentsMgr *agents.Manager, args []string) {
@@ -326,9 +349,58 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 			}
 		}
 		ui.Success(fmt.Sprintf("Agentes Locales Activos (.agents/agents/): %s", strings.Join(activeAgents, ", ")))
+
+		// Comprobar si los agentes locales duplican la configuración global
+		hasGlobalAgents, _ := antigravityTarget.HasGlobalAgents()
+		if hasGlobalAgents {
+			ui.Warn(fmt.Sprintf("Duplicación de subagentes detectada: Existen %d agentes en .agents/agents/ que ya están instalados globalmente en ~/.gemini/config/agents/. Antigravity registrará el doble de subagentes.", len(activeAgents)))
+			ui.Bullet("Sugerencia", "Si no necesitas versionar agentes específicos en este repo, ejecuta 'subikit agent dedup' para remover la copia local redundante.")
+		}
 	}
 
-	// 2. Diagnóstico Global
+	// Comprobar carpeta obsoleta .agents/subagents/
+	legacySubagentsPath := filepath.Join(absPath, ".agents", "subagents")
+	if _, err := os.Stat(legacySubagentsPath); err == nil {
+		ui.Warn("Carpeta obsoleta detectada: .agents/subagents/. Puede generar subagentes duplicados en Antigravity. Ejecuta 'subikit sync' para limpiarla.")
+	}
+
+	// 2. Diagnóstico de Archivo Consolidado y Token Budget
+	agentsMDPath := filepath.Join(absPath, "AGENTS.md")
+	geminiMDPath := filepath.Join(absPath, "GEMINI.md")
+
+	hasAgents := false
+	if _, err := os.Stat(agentsMDPath); err == nil {
+		hasAgents = true
+	}
+
+	hasGemini := false
+	if _, err := os.Stat(geminiMDPath); err == nil {
+		hasGemini = true
+	}
+
+	if hasAgents && hasGemini {
+		ui.Error("¡Conflicto crítico de reglas detectado!")
+		ui.Bullet("Problema", "Existen simultáneamente AGENTS.md y GEMINI.md en la raíz del proyecto.")
+		ui.Bullet("Impacto", "Antigravity cargará ambos archivos duplicando tokens (~16.000 tokens), causando mutilación de reglas y exclusión forzada de skills.")
+		ui.Bullet("Solución", "Ejecuta 'subikit sync' para eliminar automáticamente GEMINI.md y unificar en AGENTS.md.")
+	} else if hasAgents {
+		ui.Success("Archivo consolidado universal activo: AGENTS.md")
+	} else if hasGemini {
+		ui.Warn("Se detectó GEMINI.md sin AGENTS.md. Ejecuta 'subikit sync' para migrar al estándar universal AGENTS.md.")
+	}
+
+	if hasAgents {
+		if data, err := os.ReadFile(agentsMDPath); err == nil {
+			estTokens := len(data) / 4
+			if estTokens > 12000 {
+				ui.Warn(fmt.Sprintf("Presupuesto de tokens elevado en AGENTS.md: ~%d tokens estimados (Umbral recomendado: 12.000)", estTokens))
+			} else {
+				ui.Bullet("Presupuesto de Tokens (AGENTS.md)", fmt.Sprintf("~%d tokens estimados (dentro del límite seguro)", estTokens))
+			}
+		}
+	}
+
+	// 3. Diagnóstico Global
 	globalRulesPath, err := antigravityTarget.GetGlobalRulesPath()
 	if err == nil {
 		if entries, err := os.ReadDir(globalRulesPath); err == nil && len(entries) > 0 {
@@ -342,7 +414,7 @@ func handleDoctor(rulesMgr *rules.Manager, skillsMgr *skills.Manager, mcpMgr *mc
 		}
 	}
 
-	// 3. Diagnóstico de Servidores MCP
+	// 4. Diagnóstico de Servidores MCP
 	ui.Section("Diagnóstico de Servidores MCP")
 	mcpStatuses := mcpMgr.Doctor()
 	for _, status := range mcpStatuses {
@@ -470,6 +542,39 @@ func handleAgent(agentsMgr *agents.Manager, args []string) {
 		}
 
 		ui.Success(fmt.Sprintf("Modelo del agente '%s' actualizado a '%s' en %s", name, modelName, agentPath))
+
+	case "dedup", "clean-duplicates":
+		fs := flag.NewFlagSet("dedup", flag.ExitOnError)
+		targetPath := fs.String("path", ".", "Ruta del proyecto a sanear")
+		fs.Parse(args[1:])
+
+		absPath, err := filepath.Abs(*targetPath)
+		if err != nil {
+			absPath = *targetPath
+		}
+
+		t := targets.NewAntigravityTarget()
+		hasGlobal, _ := t.HasGlobalAgents()
+		if !hasGlobal {
+			ui.Warn("No se detectaron agentes globales en ~/.gemini/config/agents/. No se recomienda eliminar los agentes locales ya que el entorno se quedaría sin subagentes.")
+			return
+		}
+
+		// Limpiar carpeta obsoleta si existe
+		_, _ = t.CleanupLegacySubagents(absPath)
+
+		removed, err := t.RemoveLocalRedundantAgents(absPath)
+		if err != nil {
+			ui.Error(fmt.Sprintf("Error al sanear agentes locales: %v", err))
+			return
+		}
+
+		if removed == 0 {
+			ui.Info(fmt.Sprintf("No se encontraron agentes locales redundantes en %s/.agents/agents/. El entorno ya está limpio.", absPath))
+		} else {
+			ui.Success(fmt.Sprintf("Sanados %d agentes locales en %s/.agents/agents/.", removed, absPath))
+			ui.Bullet("Resultado", "Antigravity ahora cargará únicamente los agentes globales de usuario, resolviendo la duplicación de subagentes en la interfaz.")
+		}
 
 	default:
 		ui.Error(fmt.Sprintf("Comando de agente no reconocido: '%s'", action))
@@ -829,11 +934,11 @@ func printUsage() {
 	fmt.Println("Comandos disponibles:")
 	fmt.Println("  tui      Inicia la interfaz de terminal interactiva (Dashboard & Glosario)")
 	fmt.Println("  init     Inicializa reglas, skills y agentes en el proyecto")
-	fmt.Println("           Opciones: --global, --force, --all, --path <dir>")
+	fmt.Println("           Opciones: --global, --force, --all, --local-agents, --path <dir>")
 	fmt.Println("  update   Comprueba y actualiza SubiKit a la última versión de GitHub Releases")
 	fmt.Println("           Opciones: --check, --force, -y")
 	fmt.Println("  agent    Gestión de Agentes y Subagentes (Orquestador y Especialistas)")
-	fmt.Println("           Subcomandos: subikit agent list, subikit agent show <nombre>")
+	fmt.Println("           Subcomandos: subikit agent list, show <nombre>, dedup, set-model")
 	fmt.Println("  skill    Gestión de Skills de Ingeniería y Frontend Craftsmanship")
 	fmt.Println("           Subcomandos: subikit skill list, subikit skill show <nombre>")
 	fmt.Println("  rule     Gestión de Reglas y Convenciones de Código")
