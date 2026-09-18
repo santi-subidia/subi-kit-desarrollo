@@ -49,9 +49,36 @@ Al auditar componentes o pantallas de interfaz, emitir un veredicto con una de l
 
 ---
 
+## 🚦 Clasificación de Riesgo Semántico y Auditoría 4R
+
+El volumen de líneas modificadas **no** determina la severidad de la revisión: 5 líneas tocando autenticación outrankean 5.000 líneas de renombre cosmético.
+
+### 1. Señales Semánticas Críticas de Riesgo
+Si el diff de cambios toca alguna de las siguientes señales, la auditoría **4R** es obligatoria y bloqueante antes de la entrega:
+- **`SignalAuth`**: JWT, tokens, middleware de login, sesiones, cookies o hash de contraseñas.
+- **`SignalPayments`**: Cobros, pasarelas de pago (Stripe, MercadoPago), saldos o facturación.
+- **`SignalPermissions`**: Roles de usuario, políticas RLS en base de datos, grants o guardas de ruta.
+- **`SignalSecurity`**: Variables de entorno, lectura de secretos, endpoints públicos o sanitización de inputs.
+- **`SignalShellProcess`**: Invocación de comandos bash, CLI o creación de subprocesos.
+
+### 2. Las 4 Dimensiones Canónicas (4R)
+- **Risk (Riesgo)**: Superficie de ataque expuesta, fuga de datos y elevación de privilegios.
+- **Resilience (Resiliencia)**: Manejo defensivo de timeouts, fallos de red y degradación grácil.
+- **Readability (Legibilidad)**: Tipado estricto, separación de responsabilidades y cero código espagueti.
+- **Reliability (Confiabilidad)**: Rigor de aserciones en tests, cumplimiento de contratos y validación de invariantes.
+
+### 3. Contrato de Evidencia Numérica
+El veredicto de verificación **prohíbe el auto-reporte complaciente**. El reporte debe incluir:
+- **Comando exacto ejecutado** (ej. `npm test`, `go test ./...`, `dotnet test`).
+- **Código de salida numérico** (`exit_code: 0`).
+- **Recuento verificable** de pruebas ejecutadas (ej. `12 passed, 0 failed`).
+
+---
+
 ## 🔍 Checklist General de Verificación
 - [ ] ¿Cumple todos los escenarios Given/When/Then de la Spec?
-- [ ] ¿Pasan todos los tests automatizados (`dotnet test`, `npm test`, `go test`)?
+- [ ] ¿Pasan todos los tests automatizados con `exit_code: 0` demostrable?
+- [ ] ¿Se identificaron señales críticas de riesgo y se aplicó la auditoría 4R?
 - [ ] ¿Los tests son determinísticos, rápidos (< 2s) y poseen aserciones diversas (no solo de presencia o no-nulos)?
 - [ ] ¿Hay tipos `any`, conversiones inseguras o swallow de excepciones?
 - [ ] *(Backend .NET)* ¿Cero Sync-over-Async (`.Result`), cero N+1 en EF Core y compilaciones incrementales limpias en MSBuild?
