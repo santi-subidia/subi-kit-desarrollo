@@ -63,3 +63,22 @@ Crea un mecanismo de prueba rápido (< 2 segundos), determinístico y aislado.
 1. Ejecutar el feedback loop de la Fase 1: debe pasar a **VERDE**.
 2. Ejecutar la suite completa de pruebas del proyecto para garantizar cero regresiones.
 3. Convertir el arnés o script de reproducción en un test permanente del repositorio (`test(regression): ...`).
+
+---
+
+## ⏱️ Presupuesto de Intentos (Attempt Budget)
+
+Para evitar bucles infinitos de prueba y error que degradan el contexto y consumen tokens:
+
+1. **Límite de 3 Intentos en Fase 3**:
+   - Tienes un presupuesto máximo de **3 intentos** para aplicar un fix quirúrgico que pase el loop a VERDE.
+2. **Parada Obligatoria y Rendición de Evidencia**:
+   - Si al 3er intento el test sigue fallando en ROJO, **detén la ejecución inmediatamente**.
+   - Prohibido hacer un 4to intento a ciegas o probar parches al azar.
+   - Reporta al Orquestador y a Subi:
+     - El comando exacto ejecutado y su código de salida.
+     - La salida limpia del error (sin credenciales ni rutas privadas).
+     - Las 3 hipótesis que fueron descartadas y el diagnóstico actual.
+3. **Escalamiento Humano**:
+   - Espera la intervención o re-orientación de Subi antes de continuar.
+

@@ -85,8 +85,27 @@ Antes de editar cualquier línea del código fuente de producción:
 
 ---
 
+## ⏱️ Presupuesto de Intentos (Attempt Budget) 🎯
+
+Para evitar bucles infinitos de prueba y error en el flujo ágil:
+
+1. **Límite Estricto de 3 Intentos en Etapa 2 (Fix Quirúrgico)**:
+   - El desarrollador tiene hasta 3 oportunidades para que el test de regresión pase a VERDE.
+2. **Parada Obligatoria y Rendición de Evidencia**:
+   - Si al 3er intento el test continúa fallando, **queda prohibido realizar un 4to intento a ciegas**.
+   - Reportar inmediatamente al Orquestador y a Subi:
+     - Comando del test ejecutado y su código de salida.
+     - Logs limpios del error.
+     - Resumen de las hipótesis descartadas.
+3. **Escalamiento a SDD o Intervención Humana**:
+   - Si el bug no se resuelve en 3 intentos, significa que no es un fix superficial: se escala a una sesión de diagnóstico profundo (`diagnosing-bugs`) o se abre una spec formal en SDD.
+
+---
+
 ## 🚫 Anti-Patrones Prohibidos en Fast-Fix
 - **Modificar código sin test previo**: Tocar el código "a ojo" o adivinar el fix.
+- **Superar los 3 intentos**: Caer en el bucle de prueba y error sin detenerse a analizar.
 - **Crear documentos innecesarios**: Redactar `spec.md` para un bug de 5 líneas de código.
 - **Eliminar el test tras el fix**: El test de reproducción debe quedarse en el repositorio para siempre.
 - **Refactors masivos**: Cambiar la arquitectura o renombrar métodos no relacionados aprovechando el bugfix.
+
