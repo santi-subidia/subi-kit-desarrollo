@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/santi-subidia/dev-kit-desarrollo/internal/filemerge"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/rules"
 )
 
@@ -16,12 +17,10 @@ func NewAgnosticTarget() *AgnosticTarget {
 	return &AgnosticTarget{}
 }
 
-// GenerateAgentsMD genera un archivo AGENTS.md consolidado con todas las reglas seleccionadas.
+// GenerateAgentsMD genera o inyecta directrices consolidadas en AGENTS.md preservando cualquier contenido existente.
+// Utiliza inyección de secciones idempotentes con marcadores HTML y escrituras atómicas en disco.
 func (t *AgnosticTarget) GenerateAgentsMD(projectRoot string, selectedRules []*rules.Rule) (string, error) {
 	var builder strings.Builder
-
-	builder.WriteString("# Directrices y Reglas del Proyecto (Dev-Kit)\n\n")
-	builder.WriteString("> Este archivo consolida las reglas activas de arquitectura, calidad y convenciones del proyecto.\n\n")
 
 	// 1. Ubicar orchestrator-role primero si está presente
 	for _, r := range selectedRules {
@@ -66,8 +65,24 @@ func (t *AgnosticTarget) GenerateAgentsMD(projectRoot string, selectedRules []*r
 	}
 
 	destPath := filepath.Join(projectRoot, "AGENTS.md")
-	if err := os.WriteFile(destPath, []byte(builder.String()), 0644); err != nil {
-		return "", fmt.Errorf("error al escribir AGENTS.md: %w", err)
+	existingBytes, err := os.ReadFile(destPath)
+
+	var finalContent string
+	managedSection := strings.TrimSpace(builder.String())
+
+	if err == nil {
+		// Archivo existente: inyectar o actualizar bloque gestionado sin borrar contenido previo del proyecto
+		finalContent = filemerge.InjectMarkdownSection(string(existingBytes), "managed-rules", managedSection)
+	} else if os.IsNotExist(err) {
+		// Archivo nuevo: incluir encabezado estándar e inyectar sección con marcadores
+		header := "# Directrices y Reglas del Proyecto (Dev-Kit)\n\n> Este archivo consolida las reglas activas de arquitectura, calidad y convenciones del proyecto.\n\n"
+		finalContent = filemerge.InjectMarkdownSection(header, "managed-rules", managedSection)
+	} else {
+		return "", fmt.Errorf("error al leer AGENTS.md: %w", err)
+	}
+
+	if _, err := filemerge.WriteFileAtomic(destPath, []byte(finalContent), 0644); err != nil {
+		return "", fmt.Errorf("error al escribir AGENTS.md atómicamente: %w", err)
 	}
 
 	return destPath, nil

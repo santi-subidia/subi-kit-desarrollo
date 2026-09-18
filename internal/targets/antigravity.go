@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/agents"
+	"github.com/santi-subidia/dev-kit-desarrollo/internal/filemerge"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/rules"
 	"github.com/santi-subidia/dev-kit-desarrollo/internal/skills"
 )
@@ -23,7 +24,7 @@ func NewAntigravityTarget() *AntigravityTarget {
 	return &AntigravityTarget{}
 }
 
-// InstallProject instala rules, skills y agentes en el directorio .agents/ del proyecto.
+// InstallProject instala rules, skills y agentes en el directorio .agents/ del proyecto con escrituras atómicas.
 func (t *AntigravityTarget) InstallProject(projectRoot string, selectedRules []*rules.Rule, selectedSkills []*skills.Skill, selectedAgents []*agents.Agent, force bool) ([]string, error) {
 	var writtenFiles []string
 
@@ -35,7 +36,7 @@ func (t *AntigravityTarget) InstallProject(projectRoot string, selectedRules []*
 
 	for _, r := range selectedRules {
 		destPath := filepath.Join(rulesDir, r.Metadata.Name+".md")
-		if err := os.WriteFile(destPath, []byte(r.RawContent), 0644); err != nil {
+		if _, err := filemerge.WriteFileAtomic(destPath, []byte(r.RawContent), 0644); err != nil {
 			return writtenFiles, fmt.Errorf("error al escribir regla %s: %w", destPath, err)
 		}
 		writtenFiles = append(writtenFiles, destPath)
@@ -49,7 +50,7 @@ func (t *AntigravityTarget) InstallProject(projectRoot string, selectedRules []*
 		}
 
 		destPath := filepath.Join(skillDir, "SKILL.md")
-		if err := os.WriteFile(destPath, []byte(s.RawContent), 0644); err != nil {
+		if _, err := filemerge.WriteFileAtomic(destPath, []byte(s.RawContent), 0644); err != nil {
 			return writtenFiles, fmt.Errorf("error al escribir skill %s: %w", destPath, err)
 		}
 		writtenFiles = append(writtenFiles, destPath)
@@ -63,7 +64,7 @@ func (t *AntigravityTarget) InstallProject(projectRoot string, selectedRules []*
 
 	for _, a := range selectedAgents {
 		destPath := filepath.Join(agentsDir, a.Metadata.Name+".md")
-		if err := os.WriteFile(destPath, []byte(a.RawContent), 0644); err != nil {
+		if _, err := filemerge.WriteFileAtomic(destPath, []byte(a.RawContent), 0644); err != nil {
 			return writtenFiles, fmt.Errorf("error al escribir agente %s: %w", destPath, err)
 		}
 		writtenFiles = append(writtenFiles, destPath)
@@ -99,7 +100,8 @@ func (t *AntigravityTarget) EnsureGitignore(projectRoot string) error {
 		toAppend = strings.TrimRight(existingContent, "\r\n") + "\n\n# Dev-Kit y MCPs\n.codegraph/\n"
 	}
 
-	return os.WriteFile(gitignorePath, []byte(toAppend), 0644)
+	_, err = filemerge.WriteFileAtomic(gitignorePath, []byte(toAppend), 0644)
+	return err
 }
 
 // GenerateGeminiMD genera o sincroniza el archivo GEMINI.md consolidado con directrices y rol de orquestador.
@@ -151,7 +153,7 @@ func (t *AntigravityTarget) GenerateGeminiMD(projectRoot string, selectedRules [
 	}
 
 	destPath := filepath.Join(projectRoot, "GEMINI.md")
-	if err := os.WriteFile(destPath, []byte(builder.String()), 0644); err != nil {
+	if _, err := filemerge.WriteFileAtomic(destPath, []byte(builder.String()), 0644); err != nil {
 		return "", fmt.Errorf("error al escribir GEMINI.md: %w", err)
 	}
 
@@ -177,7 +179,7 @@ func (t *AntigravityTarget) CleanupLegacyGeminiMD(projectRoot string) (bool, err
 }
 
 // InstallGlobal instala rules, skills y agentes en la configuración global (~/.gemini/config/).
-// Además sincroniza de forma segura el rol de Orquestador en ~/.gemini/GEMINI.md.
+// Además sincroniza de forma segura el rol de Orquestador en ~/.gemini/GEMINI.md con escrituras atómicas.
 func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedSkills []*skills.Skill, selectedAgents []*agents.Agent, force bool) ([]string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -194,7 +196,7 @@ func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedS
 
 	for _, r := range selectedRules {
 		destPath := filepath.Join(rulesDir, r.Metadata.Name+".md")
-		if err := os.WriteFile(destPath, []byte(r.RawContent), 0644); err != nil {
+		if _, err := filemerge.WriteFileAtomic(destPath, []byte(r.RawContent), 0644); err != nil {
 			return writtenFiles, fmt.Errorf("error al escribir regla global %s: %w", destPath, err)
 		}
 		writtenFiles = append(writtenFiles, destPath)
@@ -208,7 +210,7 @@ func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedS
 		}
 
 		destPath := filepath.Join(skillDir, "SKILL.md")
-		if err := os.WriteFile(destPath, []byte(s.RawContent), 0644); err != nil {
+		if _, err := filemerge.WriteFileAtomic(destPath, []byte(s.RawContent), 0644); err != nil {
 			return writtenFiles, fmt.Errorf("error al escribir skill global %s: %w", destPath, err)
 		}
 		writtenFiles = append(writtenFiles, destPath)
@@ -222,7 +224,7 @@ func (t *AntigravityTarget) InstallGlobal(selectedRules []*rules.Rule, selectedS
 
 	for _, a := range selectedAgents {
 		destPath := filepath.Join(agentsDir, a.Metadata.Name+".md")
-		if err := os.WriteFile(destPath, []byte(a.RawContent), 0644); err != nil {
+		if _, err := filemerge.WriteFileAtomic(destPath, []byte(a.RawContent), 0644); err != nil {
 			return writtenFiles, fmt.Errorf("error al escribir agente global %s: %w", destPath, err)
 		}
 		writtenFiles = append(writtenFiles, destPath)
@@ -252,42 +254,27 @@ func (t *AntigravityTarget) syncGlobalGeminiMD(homeDir string, orchestratorRule 
 	}
 
 	geminiPath := filepath.Join(homeDir, ".gemini", "GEMINI.md")
-	block := fmt.Sprintf("%s\n## %s\n\n%s\n%s\n",
-		globalGeminiStartTag,
+	blockContent := fmt.Sprintf("## %s\n\n%s",
 		orchestratorRule.Metadata.Title,
 		orchestratorRule.Body,
-		globalGeminiEndTag,
 	)
 
+	var existingContent string
 	existingBytes, err := os.ReadFile(geminiPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			if err := os.MkdirAll(filepath.Dir(geminiPath), 0755); err != nil {
-				return "", err
-			}
-			if err := os.WriteFile(geminiPath, []byte(block), 0644); err != nil {
-				return "", err
-			}
-			return geminiPath, nil
-		}
+	if err == nil {
+		existingContent = string(existingBytes)
+	} else if !os.IsNotExist(err) {
 		return "", err
 	}
 
-	content := string(existingBytes)
-	startIdx := strings.Index(content, globalGeminiStartTag)
-	endIdx := strings.Index(content, globalGeminiEndTag)
+	newContent := filemerge.InjectSectionWithMarkers(
+		existingContent,
+		globalGeminiStartTag,
+		globalGeminiEndTag,
+		blockContent,
+	)
 
-	var newContent string
-	if startIdx != -1 && endIdx != -1 && endIdx > startIdx {
-		// Reemplazar bloque existente manteniendo el resto intacto
-		endPos := endIdx + len(globalGeminiEndTag)
-		newContent = content[:startIdx] + strings.TrimSpace(block) + content[endPos:]
-	} else {
-		// Anexar al final sin tocar los bloques previos (CodeGraph, Context7, Engram)
-		newContent = strings.TrimSpace(content) + "\n\n" + block
-	}
-
-	if err := os.WriteFile(geminiPath, []byte(newContent), 0644); err != nil {
+	if _, err := filemerge.WriteFileAtomic(geminiPath, []byte(newContent), 0644); err != nil {
 		return "", err
 	}
 
@@ -391,4 +378,3 @@ func (t *AntigravityTarget) RemoveLocalRedundantAgents(projectRoot string) (int,
 
 	return removed, nil
 }
-
