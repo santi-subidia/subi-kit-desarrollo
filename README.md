@@ -23,7 +23,7 @@ Diseñado bajo la premisa de **Real Engineering & Craftsmanship vs AI Slop**: er
 
 ## 🎯 Filosofía y Principios
 
-1. **Spec-Driven Development (SDD)**: Prohibido programar a ciegas. Toda feature significativa recorre especificación, clarificación, plan técnico, tareas atómicas y verificación adversaria antes de cerrarse.
+1. **Agent Pipeline & Cero Burocracia**: Desarrollo colaborativo y ágil en 4 etapas (Scout → Planner → Builder → Reviewer). Cero archivos de plantillas innecesarios en el repo; máxima velocidad con control implacable de calidad.
 2. **Deep Modules & Seams (John Ousterhout & Michael Feathers)**: Módulos con gran leverage que ocultan su complejidad interna detrás de interfaces simples y costuras limpias para pruebas deterministas sin mocks frágiles.
 3. **Diagnóstico Científico & Tight Loops**: Ante bugs o regresiones, es obligatorio reproducir el fallo en un test unitario o traza ejecutable (ROJO) antes de aplicar el cambio quirúrgico que lo pase a VERDE.
 4. **Frontend Craftsmanship & Anti-Slop**: Erradicación del "AI frontend monoculture" mediante 4 Modos de Visitante (*Persuade*, *Operate*, *Read*, *Experience*), piso de calidad (*Craft Floor*), paletas perceptuales `OKLCH` y escala tipográfica fluida con `clamp()`.
@@ -37,7 +37,7 @@ El directorio `skills/` contiene 10 especificaciones operativas empaquetadas seg
 
 | Skill | Propósito | Cuándo Utilizarla | Plantillas / Recursos |
 | :--- | :--- | :--- | :--- |
-| **`sdd-workflow`** | Protocolo de 7 fases de desarrollo guiado por especificaciones con puertas de aprobación obligatorias. | Al diseñar e implementar nuevas features, refactorizaciones complejas o cambios arquitecturales. | `spec.template.md`, `tech-plan.template.md`, `tasks.template.md`, `verify.template.md`, `archive.template.md` |
+| **`agent-pipeline`** | Pipeline ágil en 4 etapas (Scout → Planner → Builder → Reviewer) con control de seguridad, performance, linting y anti-slop. | Al diseñar e implementar nuevas features, refactors o mejoras sin sobrecarga documental. | Protocolo de ejecución en `SKILL.md` |
 | **`codebase-design`** | Principios de diseño de software: *Deep Modules*, ocultamiento de información, *Seams* de I/O y la técnica *Design It Twice*. | Al diseñar nuevas interfaces, abstraer librerías, estructurar paquetes o desacoplar dependencias. | Guía y principios de diseño en `SKILL.md` |
 | **`domain-modeling`** | Construcción y refinamiento continuo del modelo de dominio, lenguaje ubicuo y registro de decisiones de arquitectura (ADRs). | Al clarificar conceptos de negocio, crear o sincronizar `CONTEXT.md` y documentar ADRs en `docs/adr/`. | Guía de ADR y modelado en `SKILL.md` |
 | **`diagnosing-bugs`** | Protocolo científico de depuración en 4 fases; **prohibido modificar código sin un Tight Feedback Loop en ROJO**. | Ante bugs difíciles, regresiones, excepciones inesperadas, timeouts o fallos intermitentes. | Protocolo de reproducción reproducible |
@@ -58,27 +58,27 @@ El catálogo incluye definiciones de roles complementarios en `agents/` (y en `.
 flowchart TD
     User([👤 Usuario / Subi]) <--> Orchestrator["👑 AGENTE ORQUESTADOR\n(Tech Lead & Coordinador)"]
     
-    Orchestrator -->|Fase 1-3 SDD: Spec & Plan| Architect["🏛️ Architect\nClean Architecture & Deep Modules"]
-    Orchestrator -->|Fase 5: Datos & Esquemas| DBA["🗄️ Database Engineer\nPostgreSQL, RLS & Migraciones"]
-    Orchestrator -->|Fase 5: Lógica & APIs| Fullstack["💻 Fullstack Developer\nNext.js, TypeScript, C# .NET"]
-    Orchestrator -->|Fase 5: Dirección de Arte| UI["🎨 UI Specialist\nCraftsmanship & DESIGN.md"]
+    Orchestrator -->|Etapa 1-2: Exploración & Plan| Architect["🏛️ Architect\nClean Architecture & Deep Modules"]
+    Orchestrator -->|Etapa 3: Datos & Esquemas| DBA["🗄️ Database Engineer\nPostgreSQL, RLS & Migraciones"]
+    Orchestrator -->|Etapa 3: Lógica & Implementación| Fullstack["💻 Fullstack Developer\nNext.js, TypeScript, C# .NET"]
+    Orchestrator -->|Etapa 3: Dirección de Arte| UI["🎨 UI Specialist\nCraftsmanship & DESIGN.md"]
     
     Architect -.-> CodeReviewer
     DBA -.-> CodeReviewer
     Fullstack -.-> CodeReviewer
     UI -.-> CodeReviewer
     
-    CodeReviewer["🛡️ Code Reviewer\nAuditoría Independiente & UI Finish Review"] -->|Veredicto: Ship / Fix / Rebuild| Orchestrator
+    CodeReviewer["🛡️ Code Reviewer\nAuditoría en 5D: Seguridad, Mantenibilidad, Anti-Slop, Perf, Lint"] -->|Veredicto: SHIP / FIX| Orchestrator
 ```
 
 | Rol de Agente | Tipo | Responsabilidad Principal | Skills Asociadas |
 | :--- | :---: | :--- | :--- |
-| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el ciclo SDD, hace routing de tareas y valida puertas de aprobación. | `sdd-workflow`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design`, `ui-craftsmanship`, `ui-hardening-audit`, `wait-what`, `wayfinder` |
-| **`architect`** | Subagente | Lidera las Fases 1 a 3 de SDD: investiga, redacta `spec.md`, detecta ambigüedades y diseña el `tech-plan.md` con Deep Modules. | `domain-modeling`, `codebase-design`, `sdd-workflow`, `wayfinder` |
-| **`fullstack-developer`** | Subagente | Implementación estricta de código de producción, endpoints, componentes, TDD y feedback loops. | `sdd-workflow`, `diagnosing-bugs`, `codebase-design`, `dotnet-hardening` |
+| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design`, `ui-craftsmanship`, `ui-hardening-audit`, `wait-what`, `wayfinder` |
+| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline`, `wayfinder` |
+| **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `agent-pipeline`, `diagnosing-bugs`, `codebase-design`, `dotnet-hardening` |
 | **`database-engineer`** | Subagente | Diseño de esquemas relacionales, políticas RLS en Supabase, migraciones SQL reproducibles y queries EF Core. | `dotnet-hardening` |
 | **`ui-specialist`** | Subagente | Dirección de arte de frontend, aplicación de Visitor Modes, tokens OKLCH, contratos `DESIGN.md` y accesibilidad WCAG AA. | `ui-craftsmanship`, `ui-hardening-audit` |
-| **`code-reviewer`** | Subagente | Auditoría adversaria de código contra la spec, verificación de ausencia de regresiones y UI Finish Review (`rebuild`, `fix`, `ship`). | `sdd-workflow`, `codebase-design`, `domain-modeling`, `diagnosing-bugs`, `ui-hardening-audit`, `ui-craftsmanship` |
+| **`code-reviewer`** | Subagente | Auditoría adversaria de código (Reviewer): Seguridad, Mantenibilidad, Anti-Slop, Performance y Linting (`SHIP` / `FIX`). | `agent-pipeline`, `codebase-design`, `domain-modeling`, `diagnosing-bugs`, `ui-hardening-audit`, `ui-craftsmanship` |
 
 ---
 
@@ -143,7 +143,7 @@ mkdir -p .agents/skills
 cp -r /ruta/a/subi-kit-desarrollo/skills/* .agents/skills/
 
 # O seleccionar únicamente las skills deseadas:
-cp -r /ruta/a/subi-kit-desarrollo/skills/sdd-workflow .agents/skills/
+cp -r /ruta/a/subi-kit-desarrollo/skills/agent-pipeline .agents/skills/
 cp -r /ruta/a/subi-kit-desarrollo/skills/ui-craftsmanship .agents/skills/
 ```
 
@@ -175,7 +175,7 @@ Agrega la referencia al catálogo o a las directrices principales en tu archivo 
 ```markdown
 ## Skills y Protocolos de Ingeniería
 Este proyecto adopta las skills de ingeniería de software ubicadas en `.agents/skills/`:
-- Para nuevas features: Seguir `.agents/skills/sdd-workflow/SKILL.md`
+- Para nuevas features y refactors: Seguir `.agents/skills/agent-pipeline/SKILL.md`
 - Para resolución de bugs: Seguir `.agents/skills/diagnosing-bugs/SKILL.md`
 - Para desarrollo frontend: Seguir `.agents/skills/ui-craftsmanship/SKILL.md`
 ```
@@ -206,13 +206,12 @@ subi-kit-desarrollo/
 │   ├── core/                       # agent-behavior, clean-code, git-conventions...
 │   └── frontend/                   # react-nextjs, tailwind-css, typescript
 ├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (10)
+│   ├── agent-pipeline/             # Pipeline ágil de 4 etapas (Scout, Planner, Builder, Reviewer)
 │   ├── codebase-design/            # Deep Modules, Seams, Design It Twice
 │   ├── diagnosing-bugs/            # Diagnóstico científico & feedback loops
 │   ├── domain-modeling/            # Glosario ubicuo & ADRs
 │   ├── dotnet-hardening/           # Rendimiento .NET, EF Core & MSBuild
 │   ├── fast-fix/                   # Protocolo ágil de corrección de bugs
-│   ├── sdd-workflow/               # Flujo SDD de 7 fases
-│   │   └── templates/              # spec, tech-plan, tasks, verify, archive
 │   ├── ui-craftsmanship/           # Dirección de arte & Visitor Modes
 │   │   └── templates/              # DESIGN.template.md
 │   ├── ui-hardening-audit/         # Auditoría 5D de calidad de UI

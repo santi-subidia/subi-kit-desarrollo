@@ -55,17 +55,16 @@ El Agente Orquestador debe clasificar toda solicitud del usuario en una de las t
 
 ---
 
-## 3. 🔴 Vía Macro: SDD Completo (Spec-Driven Development)
+## 3. 🔴 Vía Macro: Agent Pipeline (Flujo Colaborativo en 4 Etapas)
 - **Cuándo aplica**:
   - Creación de nuevas características o endpoints desde cero.
   - Rediseños de base de datos, nuevas entidades o migraciones complejas.
-  - Refactorizaciones de arquitectura o cambios que impactan 3 o más archivos.
+  - Refactorizaciones de arquitectura o cambios que impactan múltiples archivos.
   - Tareas con alta incertidumbre técnica o dependencias externas.
-- **Protocolo de ejecución (`sdd-workflow`)**:
-  1. **Fase 1**: Spec y Modelado (`spec.md` con Gherkin) -> Puerta de Aprobación.
-  2. **Fase 2**: Clarificación de dependencias y edge cases.
-  3. **Fase 3**: Plan Técnico (`tech-plan.md`, Deep Modules, Seams, ADRs) -> Puerta de Aprobación.
-  4. **Fase 4**: Desglose atómico de tareas (`tasks.md`).
-  5. **Fase 5**: Implementación delegada a subagentes (`fullstack`, `database`, `ui`).
-  6. **Fase 6**: Verificación por `code-reviewer` (Finish Review) -> Puerta de Aprobación Final.
-  7. **Fase 7**: Cierre, merge y commit.
+- **Protocolo de ejecución (`agent-pipeline`)**:
+  - **Cero burocracia documental**: Prohibido crear archivos innecesarios de spec o tasks en el repositorio.
+  1. **Etapa 1 (Scout)**: Exploración del código real, mapeo de dependencias y tipos (cero supuestos).
+  2. **Etapa 2 (Planner)**: Diseño del plan técnico directo y conciso -> **Puerta de Aprobación**.
+  3. **Etapa 3 (Builder)**: Implementación quirúrgica delegada a implementadores (`fullstack`, `database`, `ui`).
+  4. **Etapa 4 (Reviewer)**: Auditoría adversaria en 5 criterios (Seguridad, Mantenibilidad, Anti-Slop, Performance, Linting & Tests).
+  5. **Cierre**: Commit semántico y entrega.
