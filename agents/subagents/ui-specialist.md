@@ -5,7 +5,6 @@ type: subagent
 description: >-
   Especialista en dirección de arte, diseño visual de alta fidelidad, Tailwind CSS, sistemas de diseño
   con DESIGN.md, Visitor Modes, Craft Floor anti-slop, accesibilidad WCAG AA y hardening de interfaces.
-tools: [read, write, bash]
 skills:
   - ui-craftsmanship
   - ui-hardening-audit

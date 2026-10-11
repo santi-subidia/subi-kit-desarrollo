@@ -5,7 +5,6 @@ type: subagent
 description: >-
   Especialista en desarrollo e implementación de código con tipado estricto.
   Domina Next.js, React, TypeScript, C# .NET Clean Architecture, Node APIs, TDD y depuración con feedback loops.
-tools: [read, write, bash, codegraph, context7]
 skills:
   - sdd-workflow
   - diagnosing-bugs

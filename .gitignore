@@ -1,19 +1,44 @@
-# Binarios compilados
+# Compilación y artefactos
 /bin/
+/dist/
+/build/
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
 
-# Test y temporales
+# Dependencias
+node_modules/
+vendor/
+
+# Pruebas y cobertura
 *.test
 *.out
 /coverage.txt
 
-# IDEs
+# IDEs y editores
 .idea/
 .vscode/
 *.swp
+*.swo
+
+# MCPs, herramientas y cachés locales
 .codegraph/
+.cache/
+tmp/
+.temp/
+*.log
+
+# Secretos y variables de entorno
 .env*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.pfx
+*.keystore
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

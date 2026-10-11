@@ -5,7 +5,6 @@ type: subagent
 description: >-
   Auditor implacable de calidad, seguridad, profundidad de módulos y cumplimiento de especificaciones.
   Lidera la Fase 6 de Verificación contra la Spec y ejecuta el protocolo de Finish Review para Frontend.
-tools: [read, bash, codegraph]
 skills:
   - sdd-workflow
   - codebase-design

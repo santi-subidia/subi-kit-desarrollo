@@ -5,7 +5,6 @@ type: subagent
 description: >-
   Especialista en diseño de sistemas, Clean Architecture, DDD, Deep Modules, Seams,
   contratos de interfaces y análisis de impacto. Lidera las fases de Spec, Modelado de Dominio y Plan Técnico.
-tools: [read, codegraph, context7, engram]
 skills:
   - domain-modeling
   - codebase-design

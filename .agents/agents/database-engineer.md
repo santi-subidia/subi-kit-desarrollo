@@ -5,7 +5,6 @@ type: subagent
 description: >-
   Especialista en PostgreSQL, Supabase, Row Level Security (RLS), migraciones reproducibles,
   modelado relacional, índices de alto rendimiento y Entity Framework Core.
-tools: [read, write, bash]
 skills:
   - dotnet-hardening
 ---

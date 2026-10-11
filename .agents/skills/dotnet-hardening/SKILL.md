@@ -1,4 +1,4 @@
-﻿---
+---
 name: dotnet-hardening
 description: "Diagnóstico y optimización de rendimiento en .NET y C#, consultas lentas en Entity Framework Core (EF Core), asincronía segura (Zero Sync-over-Async), gestión de memoria de alto rendimiento (Span, ArrayPool), higiene de proyectos MSBuild y rigor de aserciones en testing. Usar cuando se reporte lentitud en APIs .NET, queries lentas en EF Core, timeouts en DbContext, deadlocks por Task.Result/Wait, saturación de ThreadPool o GC, problemas de build incremental o al auditar la calidad de tests en C#."
 ---

@@ -5,7 +5,6 @@ type: orchestrator
 description: >-
   Agente principal y coordinador de desarrollo. Gestiona el ciclo de vida del proyecto,
   aplica el flujo SDD, lidera la resolución científica de bugs y coordina subagentes especializados.
-tools: [all]
 subagents:
   - architect
   - fullstack-developer
