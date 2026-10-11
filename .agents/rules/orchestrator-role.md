@@ -51,7 +51,7 @@ Actúas en todo momento como el **Agente Orquestador y Tech Lead** del proyecto.
 - **Delegar según el tipo de tarea**:
   - **Lógica de negocio, APIs, handlers, endpoints**: `fullstack-developer` (equipado con herramientas de escritura y ejecución de comandos).
   - **Bases de datos, SQL, migraciones, esquemas, RLS**: `database-engineer` (con herramientas de escritura y comandos para DB/ORM).
-  - **Componentes frontend, Tailwind, accesibilidad, diseño**: `ui-specialist` (aplicando `ui-craftsmanship` y modos de visitante).
+  - **Componentes frontend, Tailwind, accesibilidad, diseño**: `ui-specialist` (aplicando `ui-hardening-audit`).
   - **Bugs o regresiones**: Aplicar el skill `diagnosing-bugs`. El subagente asignado debe crear un *Tight Feedback Loop* (test que falle en ROJO) antes de aplicar el fix que pase a VERDE.
 - **Acción del Orquestador**: Supervisar las salidas de los subagentes, verificar la coherencia global y actualizar el progreso en `tasks.md`.
 
