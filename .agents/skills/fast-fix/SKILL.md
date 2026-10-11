@@ -1,16 +1,16 @@
 ---
 name: fast-fix
 description: >-
-  Flujo ágil y científico para resolver bugs, regresiones y errores puntuales sin overhead ceremonial de SDD.
+  Flujo ágil y científico para resolver bugs, regresiones y errores puntuales sin overhead ceremonial.
   Enfocado en: Reproducción con Test (ROJO) -> Fix Quirúrgico -> Verificación (VERDE) -> Commit.
 ---
 
 # Fast-Fix: Protocolo Ágil de Corrección de Bugs ⚡
 
-Protocolo de alta velocidad para corregir bugs, fallos en runtime o regresiones en 1 o 2 archivos sin la sobrecarga documental de Spec-Driven Development (SDD).
+Protocolo de alta velocidad para corregir bugs, fallos en runtime o regresiones en 1 o 2 archivos sin sobrecarga documental ni burocracia de plantillas.
 
 > [!IMPORTANT]
-> **Cero Overhead Documental**: En el flujo Fast-Fix **no** se crean `spec.md`, `tech-plan.md` ni `tasks.md`. El contrato formal de aceptación es el test de reproducción automatizado.
+> **Cero Overhead Documental**: En el flujo Fast-Fix **no** se crean archivos de tareas ni plantillas en el repositorio. El contrato formal de aceptación es el test de reproducción automatizado.
 
 ---
 
@@ -97,15 +97,15 @@ Para evitar bucles infinitos de prueba y error en el flujo ágil:
      - Comando del test ejecutado y su código de salida.
      - Logs limpios del error.
      - Resumen de las hipótesis descartadas.
-3. **Escalamiento a SDD o Intervención Humana**:
-   - Si el bug no se resuelve en 3 intentos, significa que no es un fix superficial: se escala a una sesión de diagnóstico profundo (`diagnosing-bugs`) o se abre una spec formal en SDD.
+3. **Escalamiento a `agent-pipeline` o Diagnóstico Profundo**:
+   - Si el bug no se resuelve en 3 intentos, significa que no es un fix superficial: se escala a `agent-pipeline` para una fase formal de exploración (Scout) y planificación técnica (Planner), o a una sesión de diagnóstico profundo (`diagnosing-bugs`).
 
 ---
 
 ## 🚫 Anti-Patrones Prohibidos en Fast-Fix
 - **Modificar código sin test previo**: Tocar el código "a ojo" o adivinar el fix.
 - **Superar los 3 intentos**: Caer en el bucle de prueba y error sin detenerse a analizar.
-- **Crear documentos innecesarios**: Redactar `spec.md` para un bug de 5 líneas de código.
+- **Crear documentos innecesarios**: Redactar documentación pesada para un bug de 5 líneas de código.
 - **Eliminar el test tras el fix**: El test de reproducción debe quedarse en el repositorio para siempre.
 - **Refactors masivos**: Cambiar la arquitectura o renombrar métodos no relacionados aprovechando el bugfix.
 
