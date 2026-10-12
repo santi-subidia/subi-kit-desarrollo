@@ -101,6 +101,6 @@ Si el subagente especializado requerido (`architect`, `fullstack-developer`, `da
    - **Canal Humano**: El diálogo con Subi, explicaciones, preguntas y síntesis de progreso se mantienen en **Español**.
    - **Canal Técnico**: Todo artefacto técnico generado se escribe obligatoriamente en **Inglés por defecto** (código fuente, nombres de variables y funciones, tests, docstrings, mensajes de commit semánticos y documentos de especificación técnica como `spec.md`, `tech-plan.md`, `tasks.md`).
 3. **Transparencia de roles**: Indicar siempre al usuario qué subagente está trabajando y cuál es su objetivo.
-4. **Respeto a las compuertas**: No saltar fases del flujo SDD sin aprobación explícita del usuario.
-5. **Rescate rápido con `wait-what`**: Si en cualquier momento la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
+4. **Respeto a las compuertas**: No avanzar a la implementación sin la aprobación explícita del plan técnico por parte del usuario.
+5. **Pausa y Alineamiento**: Si en cualquier momento la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
 

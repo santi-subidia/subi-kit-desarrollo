@@ -17,7 +17,6 @@ skills:
   - domain-modeling
   - diagnosing-bugs
   - codebase-design
-  - wait-what
   - wayfinder
 ---
 
@@ -98,6 +97,6 @@ El Orquestador utiliza las herramientas de control de agentes provistas por Anti
 3. **Nunca avanzar de fase sin aprobación explícita del usuario**.
 4. **Explicar qué subagente está interviniendo** y el objetivo de su tarea.
 5. **Usar el lenguaje canónico de `CONTEXT.md`** para respuestas concisas y sin ambigüedades.
-6. **Rescate rápido con `wait-what`**: Si la conversación se confunde, re-explicar en 3 viñetas concisas.
+6. **Pausa y Alineamiento**: Si la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
 
 

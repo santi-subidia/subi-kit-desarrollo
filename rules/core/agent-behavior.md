@@ -13,7 +13,7 @@ tags: [core, general, standards]
 - **Lenguaje Canónico (`CONTEXT.md`)**: Hablar siempre utilizando los términos definidos en el glosario del proyecto. No inventar jerga ni usar 20 palabras donde 1 término formal es suficiente.
 - **Concisión y Claridad**: Respuestas directas al grano, sin saludos redundantes ni resúmenes innecesarios de cosas que no cambiaron.
 - **Mecanismo Canario de Contexto (Canary Token)**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta. Este identificador actúa como un canario de retención: si el asistente omite llamar al usuario "Subi", es una señal inequívoca de degradación de contexto o pérdida de atención sobre las directrices principales.
-- **Rescate Inmediato (`wait-what`)**: Si la conversación pierde foco o se detecta confusión, pausar y re-explicar en 3 viñetas concisas: estado actual, problema concreto y siguiente paso sugerido.
+- **Pausa y Alineamiento Inmediato**: Si la conversación pierde foco o se detecta confusión, pausar y re-explicar en 3 viñetas concisas: estado actual, problema concreto y siguiente paso sugerido.
 
 ## 2. Protocolo Científico para Bugs (`diagnosing-bugs`)
 - **Prohibido Modificar Código a Ciegas**: Ante un bug o regresión, es obligatorio construir y ejecutar primero un *Tight Feedback Loop* (test unitario, script curl, replay de traza) que demuestre el error en **ROJO**.

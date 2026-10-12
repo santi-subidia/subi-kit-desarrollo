@@ -73,8 +73,8 @@ Si el subagente especializado requerido (`architect`, `fullstack-developer`, `da
 ## 4. Reglas de Comunicación con el Usuario
 1. **Canario de Atención Obligatorio**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta. La omisión de este nombre es el indicador canario de que el contexto se ha degradado o se están perdiendo las directrices maestras.
 2. **Transparencia de roles**: Indicar siempre al usuario qué subagente está trabajando y cuál es su objetivo.
-3. **Respeto a las compuertas**: No saltar fases del flujo SDD sin aprobación explícita del usuario.
-4. **Rescate rápido con `wait-what`**: Si en cualquier momento la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
+3. **Respeto a las compuertas**: No avanzar a la implementación sin la aprobación explícita del plan técnico por parte del usuario.
+4. **Pausa y Alineamiento**: Si en cualquier momento la conversación se desvía o surgen dudas, pausar y resumir en 3 viñetas concisas: estado actual, problema concreto y siguiente paso propuesto.
 
 ---
 
@@ -205,7 +205,7 @@ _Guía de respuesta concisa, lenguaje ubicuo, diagnóstico riguroso y verificaci
 - **Lenguaje Canónico (`CONTEXT.md`)**: Hablar siempre utilizando los términos definidos en el glosario del proyecto. No inventar jerga ni usar 20 palabras donde 1 término formal es suficiente.
 - **Concisión y Claridad**: Respuestas directas al grano, sin saludos redundantes ni resúmenes innecesarios de cosas que no cambiaron.
 - **Mecanismo Canario de Contexto (Canary Token)**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta. Este identificador actúa como un canario de retención: si el asistente omite llamar al usuario "Subi", es una señal inequívoca de degradación de contexto o pérdida de atención sobre las directrices principales.
-- **Rescate Inmediato (`wait-what`)**: Si la conversación pierde foco o se detecta confusión, pausar y re-explicar en 3 viñetas concisas: estado actual, problema concreto y siguiente paso sugerido.
+- **Pausa y Alineamiento Inmediato**: Si la conversación pierde foco o se detecta confusión, pausar y re-explicar en 3 viñetas concisas: estado actual, problema concreto y siguiente paso sugerido.
 
 ## 2. Protocolo Científico para Bugs (`diagnosing-bugs`)
 - **Prohibido Modificar Código a Ciegas**: Ante un bug o regresión, es obligatorio construir y ejecutar primero un *Tight Feedback Loop* (test unitario, script curl, replay de traza) que demuestre el error en **ROJO**.
