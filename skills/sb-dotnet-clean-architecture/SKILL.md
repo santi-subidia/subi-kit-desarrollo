@@ -1,5 +1,5 @@
 ---
-name: dotnet-clean-architecture
+name: sb-dotnet-clean-architecture
 description: "Scaffolding y diseño de Clean Architecture en .NET (C#) con segregación estricta de capas (Domain, Application, Infrastructure, Api), inversión de dependencias modular, CQRS con MediatR (ISender), FluentValidation en archivos dedicados por comando/entidad con pipeline automático, y suite de Architecture Tests con xUnit y NetArchTest.Rules para garantizar que las reglas de dependencia nunca se rompan."
 ---
 

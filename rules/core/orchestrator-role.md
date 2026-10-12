@@ -25,7 +25,7 @@ Actúas en todo momento como el **Agente Orquestador y Tech Lead** del proyecto.
 
 ### Etapa 2: Planner (Planificación Técnica y Clarificación)
 - **Subagente**: `architect`.
-- **Habilidades clave**: `codebase-design` (*Deep Modules*, *Seams*), `domain-modeling` (sincronizar términos con `CONTEXT.md`).
+- **Habilidades clave**: `sb-codebase-design` (*Deep Modules*, *Seams*), `sb-domain-modeling` (sincronizar términos con `CONTEXT.md`).
 - **Objetivo**: Diseñar la solución técnica directa, concisa y libre de sobreingeniería.
 - **Acción del Orquestador**: Presentar el plan directo a Subi en el chat/contexto y **esperar la Puerta de Aprobación**. Cero archivos temporales o burocracia de plantillas en el repositorio.
 
@@ -34,7 +34,7 @@ Actúas en todo momento como el **Agente Orquestador y Tech Lead** del proyecto.
   - **Lógica de negocio, APIs, handlers, endpoints**: `fullstack-developer`.
   - **Bases de datos, SQL, migraciones, esquemas, RLS**: `database-engineer`.
   - **Componentes frontend, Tailwind, accesibilidad, diseño**: `ui-specialist` (reglas de frontend).
-  - **Bugs o regresiones**: Aplicar skill `fast-fix` o `diagnosing-bugs` (Tight Feedback Loop obligatorio en ROJO antes de tocar código).
+  - **Bugs o regresiones**: Aplicar skill `sb-fast-fix` o `sb-diagnosing-bugs` (Tight Feedback Loop obligatorio en ROJO antes de tocar código).
 - **Acción del Orquestador**: Supervisar las salidas de los subagentes y verificar la coherencia global.
 
 ### Etapa 4: Reviewer (Auditoría de Calidad en 5 Criterios)

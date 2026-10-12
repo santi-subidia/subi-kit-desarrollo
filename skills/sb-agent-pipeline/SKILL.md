@@ -1,5 +1,5 @@
 ---
-name: agent-pipeline
+name: sb-agent-pipeline
 description: >-
   Pipeline ágil de desarrollo colaborativo en 4 etapas: Scout (Exploración) ->
   Planner (Plan Técnico) -> Builder (Implementación) -> Reviewer (Auditoría de Calidad).

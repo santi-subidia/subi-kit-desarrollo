@@ -15,7 +15,7 @@ tags: [core, general, standards]
 - **Mecanismo Canario de Contexto (Canary Token)**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta. Este identificador actúa como un canario de retención: si el asistente omite llamar al usuario "Subi", es una señal inequívoca de degradación de contexto o pérdida de atención sobre las directrices principales.
 - **Pausa y Alineamiento Inmediato**: Si la conversación pierde foco o se detecta confusión, pausar y re-explicar en 3 viñetas concisas: estado actual, problema concreto y siguiente paso sugerido.
 
-## 2. Protocolo Científico para Bugs (`diagnosing-bugs`)
+## 2. Protocolo Científico para Bugs (`sb-diagnosing-bugs`)
 - **Prohibido Modificar Código a Ciegas**: Ante un bug o regresión, es obligatorio construir y ejecutar primero un *Tight Feedback Loop* (test unitario, script curl, replay de traza) que demuestre el error en **ROJO**.
 - **Fix Quirúrgico y Verificación**: Aplicar el cambio mínimo necesario y demostrar que el loop pasa a **VERDE** sin romper tests existentes.
 

@@ -4,7 +4,7 @@ title: Enrutamiento de Flujos de Trabajo (SDD vs Fast-Fix vs Direct-Tweak)
 category: core
 always_on: true
 description: Clasifica cada solicitud en tres vías (Macro SDD, Micro Fast-Fix, Nano Direct-Tweak) para eliminar la sobrecarga documental en bugs pequeños o tareas simples.
-tags: [core, routing, sdd, fast-fix, direct-tweak, workflows]
+tags: [core, routing, sb-fast-fix, sb-agent-pipeline, direct-tweak, workflows]
 ---
 
 # Enrutamiento de Flujos de Trabajo: Macro vs Micro vs Nano 🚦
@@ -46,7 +46,7 @@ El Agente Orquestador debe clasificar toda solicitud del usuario en una de las t
   - Regresiones de funcionalidad existente.
   - Comportamiento inesperado o excepciones en un endpoint o handler puntual.
   - Cambios que tocan 1 o 2 archivos como máximo.
-- **Protocolo de ejecución (`fast-fix`)**:
+- **Protocolo de ejecución (`sb-fast-fix`)**:
   - **Prohibido crear `spec.md`, `tech-plan.md` o `tasks.md`**. El contrato de verdad es el test.
   1. **Reproducción (ROJO)**: Escribir un test unitario, script cURL o invocación que demuestre el fallo de forma determinística en pantalla.
   2. **Fix Quirúrgico**: Modificar el código mínimo indispensable en el archivo afectado (directo o delegando a un subagente ejecutor).
@@ -61,7 +61,7 @@ El Agente Orquestador debe clasificar toda solicitud del usuario en una de las t
   - Rediseños de base de datos, nuevas entidades o migraciones complejas.
   - Refactorizaciones de arquitectura o cambios que impactan múltiples archivos.
   - Tareas con alta incertidumbre técnica o dependencias externas.
-- **Protocolo de ejecución (`agent-pipeline`)**:
+- **Protocolo de ejecución (`sb-agent-pipeline`)**:
   - **Cero burocracia documental**: Prohibido crear archivos innecesarios de spec o tasks en el repositorio.
   1. **Etapa 1 (Scout)**: Exploración del código real, mapeo de dependencias y tipos (cero supuestos).
   2. **Etapa 2 (Planner)**: Diseño del plan técnico directo y conciso -> **Puerta de Aprobación**.

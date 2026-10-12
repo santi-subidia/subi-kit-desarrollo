@@ -1,5 +1,5 @@
 ---
-name: diagnosing-bugs
+name: sb-diagnosing-bugs
 description: >-
   Protocolo riguroso de diagnóstico y depuración para bugs complejos y regresiones.
   Úsalo cuando el usuario reporte un bug, fallo, excepción, comportamiento inesperado o lentitud.

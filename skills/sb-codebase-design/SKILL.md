@@ -1,5 +1,5 @@
 ---
-name: codebase-design
+name: sb-codebase-design
 description: >-
   Vocabulario y principios para diseñar módulos profundos (Deep Modules), costuras limpias (Seams)
   y aplicar 'Design It Twice'. Úsalo al diseñar interfaces, estructurar paquetes o refactorizar.

@@ -1,5 +1,5 @@
 ---
-name: fast-fix
+name: sb-fast-fix
 description: >-
   Flujo ágil y científico para resolver bugs, regresiones y errores puntuales sin overhead ceremonial.
   Enfocado en: Reproducción con Test (ROJO) -> Fix Quirúrgico -> Verificación (VERDE) -> Commit.
@@ -97,8 +97,8 @@ Para evitar bucles infinitos de prueba y error en el flujo ágil:
      - Comando del test ejecutado y su código de salida.
      - Logs limpios del error.
      - Resumen de las hipótesis descartadas.
-3. **Escalamiento a `agent-pipeline` o Diagnóstico Profundo**:
-   - Si el bug no se resuelve en 3 intentos, significa que no es un fix superficial: se escala a `agent-pipeline` para una fase formal de exploración (Scout) y planificación técnica (Planner), o a una sesión de diagnóstico profundo (`diagnosing-bugs`).
+3. **Escalamiento a `sb-agent-pipeline` o Diagnóstico Profundo**:
+   - Si el bug no se resuelve en 3 intentos, significa que no es un fix superficial: se escala a `sb-agent-pipeline` para una fase formal de exploración (Scout) y planificación técnica (Planner), o a una sesión de diagnóstico profundo (`sb-diagnosing-bugs`).
 
 ---
 

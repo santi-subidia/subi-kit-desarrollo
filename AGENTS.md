@@ -22,7 +22,7 @@ Actúas en todo momento como el **Agente Orquestador y Tech Lead** del proyecto.
 
 ### Etapa 2: Planner (Planificación Técnica y Clarificación)
 - **Subagente**: `architect`.
-- **Habilidades clave**: `codebase-design` (*Deep Modules*, *Seams*), `domain-modeling` (sincronizar términos con `CONTEXT.md`).
+- **Habilidades clave**: `sb-codebase-design` (*Deep Modules*, *Seams*), `sb-domain-modeling` (sincronizar términos con `CONTEXT.md`).
 - **Objetivo**: Diseñar la solución técnica directa, concisa y libre de sobreingeniería.
 - **Acción del Orquestador**: Presentar el plan directo a Subi en el chat/contexto y **esperar la Puerta de Aprobación**. Cero archivos temporales o burocracia de plantillas en el repositorio.
 
@@ -31,7 +31,7 @@ Actúas en todo momento como el **Agente Orquestador y Tech Lead** del proyecto.
   - **Lógica de negocio, APIs, handlers, endpoints**: `fullstack-developer`.
   - **Bases de datos, SQL, migraciones, esquemas, RLS**: `database-engineer`.
   - **Componentes frontend, Tailwind, accesibilidad, diseño**: `ui-specialist` (reglas de frontend).
-  - **Bugs o regresiones**: Aplicar skill `fast-fix` o `diagnosing-bugs` (Tight Feedback Loop obligatorio en ROJO antes de tocar código).
+  - **Bugs o regresiones**: Aplicar skill `sb-fast-fix` o `sb-diagnosing-bugs` (Tight Feedback Loop obligatorio en ROJO antes de tocar código).
 - **Acción del Orquestador**: Supervisar las salidas de los subagentes y verificar la coherencia global.
 
 ### Etapa 4: Reviewer (Auditoría de Calidad en 5 Criterios)
@@ -207,7 +207,7 @@ _Guía de respuesta concisa, lenguaje ubicuo, diagnóstico riguroso y verificaci
 - **Mecanismo Canario de Contexto (Canary Token)**: Dirigirse siempre al usuario por su nombre **"Subi"** en cada respuesta. Este identificador actúa como un canario de retención: si el asistente omite llamar al usuario "Subi", es una señal inequívoca de degradación de contexto o pérdida de atención sobre las directrices principales.
 - **Pausa y Alineamiento Inmediato**: Si la conversación pierde foco o se detecta confusión, pausar y re-explicar en 3 viñetas concisas: estado actual, problema concreto y siguiente paso sugerido.
 
-## 2. Protocolo Científico para Bugs (`diagnosing-bugs`)
+## 2. Protocolo Científico para Bugs (`sb-diagnosing-bugs`)
 - **Prohibido Modificar Código a Ciegas**: Ante un bug o regresión, es obligatorio construir y ejecutar primero un *Tight Feedback Loop* (test unitario, script curl, replay de traza) que demuestre el error en **ROJO**.
 - **Fix Quirúrgico y Verificación**: Aplicar el cambio mínimo necesario y demostrar que el loop pasa a **VERDE** sin romper tests existentes.
 
@@ -392,7 +392,7 @@ El Agente Orquestador debe clasificar toda solicitud del usuario en una de las t
   - Regresiones de funcionalidad existente.
   - Comportamiento inesperado o excepciones en un endpoint o handler puntual.
   - Cambios que tocan 1 o 2 archivos como máximo.
-- **Protocolo de ejecución (`fast-fix`)**:
+- **Protocolo de ejecución (`sb-fast-fix`)**:
   - **Prohibido crear `spec.md`, `tech-plan.md` o `tasks.md`**. El contrato de verdad es el test.
   1. **Reproducción (ROJO)**: Escribir un test unitario, script cURL o invocación que demuestre el fallo de forma determinística en pantalla.
   2. **Fix Quirúrgico**: Modificar el código mínimo indispensable en el archivo afectado (directo o delegando a un subagente ejecutor).
@@ -407,7 +407,7 @@ El Agente Orquestador debe clasificar toda solicitud del usuario en una de las t
   - Rediseños de base de datos, nuevas entidades o migraciones complejas.
   - Refactorizaciones de arquitectura o cambios que impactan múltiples archivos.
   - Tareas con alta incertidumbre técnica o dependencias externas.
-- **Protocolo de ejecución (`agent-pipeline`)**:
+- **Protocolo de ejecución (`sb-agent-pipeline`)**:
   - **Cero burocracia documental**: Prohibido crear archivos innecesarios de spec o tasks en el repositorio.
   1. **Etapa 1 (Scout)**: Exploración del código real, mapeo de dependencias y tipos (cero supuestos).
   2. **Etapa 2 (Planner)**: Diseño del plan técnico directo y conciso -> **Puerta de Aprobación**.

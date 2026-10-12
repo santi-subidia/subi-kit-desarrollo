@@ -1,5 +1,5 @@
 ---
-name: domain-modeling
+name: sb-domain-modeling
 description: >-
   Construye y refina activamente el modelo de dominio del proyecto. Úsalo al discutir
   terminología del negocio, crear o editar CONTEXT.md, o registrar y mantener ADRs (Architecture Decision Records).
@@ -97,5 +97,5 @@ Un `CONTEXT.md` debe ser conciso, directo y servir como tabla de traducción ent
 ## ⚡ Disciplina Operativa para Agentes
 
 1. **Desafiar la jerga**: Si el usuario o una spec usa un término nuevo o poco claro, pregunta de inmediato: *"¿Cómo definimos X en nuestro CONTEXT.md?"*.
-2. **Actualización continua**: Al clarificar conceptos o acordar la solución técnica en la etapa Planner de `agent-pipeline`, actualiza `CONTEXT.md` con los términos formalizados.
+2. **Actualización continua**: Al clarificar conceptos o acordar la solución técnica en la etapa Planner de `sb-agent-pipeline`, actualiza `CONTEXT.md` con los términos formalizados.
 3. **Consulta previa**: Antes de proponer nombres de clases, endpoints o tablas, consulta `CONTEXT.md` para asegurar consistencia terminológica absoluta.

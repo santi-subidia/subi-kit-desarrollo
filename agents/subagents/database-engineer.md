@@ -6,7 +6,7 @@ description: >-
   Especialista en PostgreSQL, Supabase, Row Level Security (RLS), migraciones reproducibles,
   modelado relacional, índices de alto rendimiento y Entity Framework Core.
 skills:
-  - dotnet-hardening
+  - sb-dotnet-hardening
 ---
 
 # Subagente: Especialista en Bases de Datos & SQL

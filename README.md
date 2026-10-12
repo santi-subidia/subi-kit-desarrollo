@@ -37,13 +37,13 @@ El directorio `skills/` contiene 7 especificaciones operativas empaquetadas seg�
 
 | Skill | Propósito | Cuándo Utilizarla | Plantillas / Recursos |
 | :--- | :--- | :--- | :--- |
-| **`agent-pipeline`** | Pipeline ágil en 4 etapas (Scout → Planner → Builder → Reviewer) con control de seguridad, performance, linting y anti-slop. | Al diseñar e implementar nuevas features, refactors o mejoras sin sobrecarga documental. | Protocolo de ejecución en `SKILL.md` |
-| **`codebase-design`** | Principios de diseño de software: *Deep Modules*, ocultamiento de información, *Seams* de I/O y la técnica *Design It Twice*. | Al diseñar nuevas interfaces, abstraer librerías, estructurar paquetes o desacoplar dependencias. | Guía y principios de diseño en `SKILL.md` |
-| **`domain-modeling`** | Construcción y refinamiento continuo del modelo de dominio, lenguaje ubicuo y registro de decisiones de arquitectura (ADRs). | Al clarificar conceptos de negocio, crear o sincronizar `CONTEXT.md` y documentar ADRs en `docs/adr/`. | Guía de ADR y modelado en `SKILL.md` |
-| **`diagnosing-bugs`** | Protocolo científico de depuración en 4 fases; **prohibido modificar código sin un Tight Feedback Loop en ROJO**. | Ante bugs difíciles, regresiones, excepciones inesperadas, timeouts o fallos intermitentes. | Protocolo de reproducción reproducible |
-| **`fast-fix`** | Flujo ágil y científico para corregir errores puntuales en 1 o 2 archivos sin el overhead documental de SDD. | Para parches rápidos, fixes de sintaxis o tests fallidos puntuales: Test (ROJO) → Fix → Test (VERDE) → Commit. | Ciclo de ejecución rápida |
-| **`dotnet-clean-architecture`** | Scaffolding y diseño de Clean Architecture en .NET (C#) con MediatR (ISender), FluentValidation automático y Architecture Tests (xUnit + NetArchTest). | Al crear soluciones .NET desde cero, estructurar capas o blindar dependencias de proyectos con tests de arquitectura. | Scripts CLI, pipelines y tests en `SKILL.md` |
-| **`dotnet-hardening`** | Optimización de alto rendimiento en C#, consultas sargables en EF Core, asincronía segura (Zero Sync-over-Async) y memoria. | En proyectos .NET ante consultas lentas, problemas de ThreadPool/GC, migraciones EF Core o higiene MSBuild. | Guía prescriptiva de rendimiento |
+| **`sb-agent-pipeline`** | Pipeline ágil en 4 etapas (Scout → Planner → Builder → Reviewer) con control de seguridad, performance, linting y anti-slop. | Al diseñar e implementar nuevas features, refactors o mejoras sin sobrecarga documental. | Protocolo de ejecución en `SKILL.md` |
+| **`sb-codebase-design`** | Principios de diseño de software: *Deep Modules*, ocultamiento de información, *Seams* de I/O y la técnica *Design It Twice*. | Al diseñar nuevas interfaces, abstraer librerías, estructurar paquetes o desacoplar dependencias. | Guía y principios de diseño en `SKILL.md` |
+| **`sb-domain-modeling`** | Construcción y refinamiento continuo del modelo de dominio, lenguaje ubicuo y registro de decisiones de arquitectura (ADRs). | Al clarificar conceptos de negocio, crear o sincronizar `CONTEXT.md` y documentar ADRs en `docs/adr/`. | Guía de ADR y modelado en `SKILL.md` |
+| **`sb-diagnosing-bugs`** | Protocolo científico de depuración en 4 fases; **prohibido modificar código sin un Tight Feedback Loop en ROJO**. | Ante bugs difíciles, regresiones, excepciones inesperadas, timeouts o fallos intermitentes. | Protocolo de reproducción reproducible |
+| **`sb-fast-fix`** | Flujo ágil y científico para corregir errores puntuales en 1 o 2 archivos sin el overhead documental de SDD. | Para parches rápidos, fixes de sintaxis o tests fallidos puntuales: Test (ROJO) → Fix → Test (VERDE) → Commit. | Ciclo de ejecución rápida |
+| **`sb-dotnet-clean-architecture`** | Scaffolding y diseño de Clean Architecture en .NET (C#) con MediatR (ISender), FluentValidation automático y Architecture Tests (xUnit + NetArchTest). | Al crear soluciones .NET desde cero, estructurar capas o blindar dependencias de proyectos con tests de arquitectura. | Scripts CLI, pipelines y tests en `SKILL.md` |
+| **`sb-dotnet-hardening`** | Optimización de alto rendimiento en C#, consultas sargables en EF Core, asincronía segura (Zero Sync-over-Async) y memoria. | En proyectos .NET ante consultas lentas, problemas de ThreadPool/GC, migraciones EF Core o higiene MSBuild. | Guía prescriptiva de rendimiento |
 
 ---
 
@@ -70,12 +70,12 @@ flowchart TD
 
 | Rol de Agente | Tipo | Responsabilidad Principal | Skills Asociadas |
 | :--- | :---: | :--- | :--- |
-| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design` |
-| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline`, `dotnet-clean-architecture` |
-| **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `agent-pipeline`, `dotnet-clean-architecture`, `dotnet-hardening`, `diagnosing-bugs`, `codebase-design` |
-| **`database-engineer`** | Subagente | Diseño de esquemas relacionales, políticas RLS en Supabase, migraciones SQL reproducibles y queries EF Core. | `dotnet-hardening` |
+| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `sb-agent-pipeline`, `sb-fast-fix`, `sb-diagnosing-bugs`, `sb-domain-modeling`, `sb-codebase-design`, `sb-dotnet-clean-architecture`, `sb-dotnet-hardening` |
+| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `sb-domain-modeling`, `sb-codebase-design`, `sb-agent-pipeline`, `sb-dotnet-clean-architecture` |
+| **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `sb-agent-pipeline`, `sb-dotnet-clean-architecture`, `sb-dotnet-hardening`, `sb-diagnosing-bugs`, `sb-codebase-design` |
+| **`database-engineer`** | Subagente | Diseño de esquemas relacionales, políticas RLS en Supabase, migraciones SQL reproducibles y queries EF Core. | `sb-dotnet-hardening` |
 | **`ui-specialist`** | Subagente | Especialista de interfaz frontend, Tailwind CSS, accesibilidad WCAG AA y componentes web. | Reglas de Frontend |
-| **`code-reviewer`** | Subagente | Auditoría adversaria de código (Reviewer): Seguridad, Mantenibilidad, Anti-Slop, Performance y Linting (`SHIP` / `FIX`). | `agent-pipeline`, `codebase-design`, `domain-modeling`, `diagnosing-bugs` |
+| **`code-reviewer`** | Subagente | Auditoría adversaria de código (Reviewer): Seguridad, Mantenibilidad, Anti-Slop, Performance y Linting (`SHIP` / `FIX`). | `sb-agent-pipeline`, `sb-codebase-design`, `sb-domain-modeling`, `sb-diagnosing-bugs`, `sb-dotnet-clean-architecture`, `sb-dotnet-hardening` |
 
 ---
 
@@ -140,8 +140,8 @@ mkdir -p .agents/skills
 cp -r /ruta/a/subi-kit-desarrollo/skills/* .agents/skills/
 
 # O seleccionar únicamente las skills deseadas:
-cp -r /ruta/a/subi-kit-desarrollo/skills/agent-pipeline .agents/skills/
-cp -r /ruta/a/subi-kit-desarrollo/skills/fast-fix .agents/skills/
+cp -r /ruta/a/subi-kit-desarrollo/skills/sb-agent-pipeline .agents/skills/
+cp -r /ruta/a/subi-kit-desarrollo/skills/sb-fast-fix .agents/skills/
 ```
 
 ---
@@ -172,8 +172,8 @@ Agrega la referencia al catálogo o a las directrices principales en tu archivo 
 ```markdown
 ## Skills y Protocolos de Ingeniería
 Este proyecto adopta las skills de ingeniería de software ubicadas en `.agents/skills/`:
-- Para nuevas features y refactors: Seguir `.agents/skills/agent-pipeline/SKILL.md`
-- Para resolución de bugs: Seguir `.agents/skills/diagnosing-bugs/SKILL.md`
+- Para nuevas features y refactors: Seguir `.agents/skills/sb-agent-pipeline/SKILL.md`
+- Para resolución de bugs: Seguir `.agents/skills/sb-diagnosing-bugs/SKILL.md`
 ```
 
 #### 3. Cursor & Windsurf
@@ -202,13 +202,13 @@ subi-kit-desarrollo/
 │   ├── core/                       # agent-behavior, clean-code, git-conventions...
 │   └── frontend/                   # react-nextjs, tailwind-css, typescript
 ├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (7)
-│   ├── agent-pipeline/             # Pipeline ágil de 4 etapas (Scout, Planner, Builder, Reviewer)
-│   ├── codebase-design/            # Deep Modules, Seams, Design It Twice
-│   ├── diagnosing-bugs/            # Diagnóstico científico & feedback loops
-│   ├── domain-modeling/            # Glosario ubicuo & ADRs
-│   ├── dotnet-clean-architecture/  # Scaffolding Clean Arch, MediatR, FluentValidation & NetArchTest
-│   ├── dotnet-hardening/           # Rendimiento .NET, EF Core & MSBuild
-│   └── fast-fix/                   # Protocolo ágil de corrección de bugs
+│   ├── sb-agent-pipeline/          # Pipeline ágil de 4 etapas (Scout, Planner, Builder, Reviewer)
+│   ├── sb-codebase-design/         # Deep Modules, Seams, Design It Twice
+│   ├── sb-diagnosing-bugs/         # Diagnóstico científico & feedback loops
+│   ├── sb-domain-modeling/         # Glosario ubicuo & ADRs
+│   ├── sb-dotnet-clean-architecture/ # Scaffolding Clean Arch, MediatR, FluentValidation & NetArchTest
+│   ├── sb-dotnet-hardening/        # Rendimiento .NET, EF Core & MSBuild
+│   └── sb-fast-fix/                # Protocolo ágil de corrección de bugs
 ├── .gitignore                      # Exclusiones estrictas (.codegraph/, .env*, caches)
 ├── AGENTS.md                       # Directrices consolidadas del proyecto
 └── README.md                       # Documentación oficial del catálogo
