@@ -33,7 +33,7 @@ Diseñado bajo la premisa de **Real Engineering & Craftsmanship vs AI Slop**: er
 
 ## 🧰 Catálogo de Skills (10 Disciplinas)
 
-El directorio `skills/` contiene 7 especificaciones operativas empaquetadas según el estándar `SKILL.md` (con frontmatter YAML que incluye `name` y `description`).
+El directorio `skills/` contiene 6 especificaciones operativas empaquetadas según el estándar `SKILL.md` (con frontmatter YAML que incluye `name` y `description`).
 
 | Skill | Propósito | Cuándo Utilizarla | Plantillas / Recursos |
 | :--- | :--- | :--- | :--- |
@@ -43,7 +43,6 @@ El directorio `skills/` contiene 7 especificaciones operativas empaquetadas seg�
 | **`diagnosing-bugs`** | Protocolo científico de depuración en 4 fases; **prohibido modificar código sin un Tight Feedback Loop en ROJO**. | Ante bugs difíciles, regresiones, excepciones inesperadas, timeouts o fallos intermitentes. | Protocolo de reproducción reproducible |
 | **`fast-fix`** | Flujo ágil y científico para corregir errores puntuales en 1 o 2 archivos sin el overhead documental de SDD. | Para parches rápidos, fixes de sintaxis o tests fallidos puntuales: Test (ROJO) → Fix → Test (VERDE) → Commit. | Ciclo de ejecución rápida |
 | **`dotnet-hardening`** | Optimización de alto rendimiento en C#, consultas sargables en EF Core, asincronía segura (Zero Sync-over-Async) y memoria. | En proyectos .NET ante consultas lentas, problemas de ThreadPool/GC, migraciones EF Core o higiene MSBuild. | Guía prescriptiva de rendimiento |
-| **`wayfinder`** | Planificación y cartografía de iniciativas masivas (Epics) que superan el contexto de una sola sesión de IA. | Cuando un proyecto requiere más de 100k tokens o varios días de trabajo mediante mapas de decisiones y grafos. | Mapa de dependencias y tickets atómicos |
 
 ---
 
@@ -70,8 +69,8 @@ flowchart TD
 
 | Rol de Agente | Tipo | Responsabilidad Principal | Skills Asociadas |
 | :--- | :---: | :--- | :--- |
-| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design`, `wayfinder` |
-| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline`, `wayfinder` |
+| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design` |
+| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline` |
 | **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `agent-pipeline`, `diagnosing-bugs`, `codebase-design`, `dotnet-hardening` |
 | **`database-engineer`** | Subagente | Diseño de esquemas relacionales, políticas RLS en Supabase, migraciones SQL reproducibles y queries EF Core. | `dotnet-hardening` |
 | **`ui-specialist`** | Subagente | Especialista de interfaz frontend, Tailwind CSS, accesibilidad WCAG AA y componentes web. | Reglas de Frontend |
@@ -201,14 +200,13 @@ subi-kit-desarrollo/
 │   ├── backend/                    # dotnet-csharp, node-apis, supabase-sql
 │   ├── core/                       # agent-behavior, clean-code, git-conventions...
 │   └── frontend/                   # react-nextjs, tailwind-css, typescript
-├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (7)
+├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (6)
 │   ├── agent-pipeline/             # Pipeline ágil de 4 etapas (Scout, Planner, Builder, Reviewer)
 │   ├── codebase-design/            # Deep Modules, Seams, Design It Twice
 │   ├── diagnosing-bugs/            # Diagnóstico científico & feedback loops
 │   ├── domain-modeling/            # Glosario ubicuo & ADRs
 │   ├── dotnet-hardening/           # Rendimiento .NET, EF Core & MSBuild
-│   ├── fast-fix/                   # Protocolo ágil de corrección de bugs
-│   └── wayfinder/                  # Epics y mapas de decisión
+│   └── fast-fix/                   # Protocolo ágil de corrección de bugs
 ├── .gitignore                      # Exclusiones estrictas (.codegraph/, .env*, caches)
 ├── AGENTS.md                       # Directrices consolidadas del proyecto
 └── README.md                       # Documentación oficial del catálogo

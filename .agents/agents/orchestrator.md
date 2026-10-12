@@ -17,7 +17,6 @@ skills:
   - domain-modeling
   - diagnosing-bugs
   - codebase-design
-  - wayfinder
 ---
 
 # Agente Orquestador & Tech Lead (Coordinador Principal) 👑

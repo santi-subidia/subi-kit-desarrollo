@@ -9,7 +9,6 @@ skills:
   - domain-modeling
   - codebase-design
   - agent-pipeline
-  - wayfinder
 ---
 
 # Subagente: Arquitecto de Software & Diseñador de Sistemas
