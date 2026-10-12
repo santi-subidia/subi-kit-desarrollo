@@ -17,7 +17,6 @@ skills:
   - domain-modeling
   - diagnosing-bugs
   - codebase-design
-  - ui-hardening-audit
   - wait-what
   - wayfinder
 ---
@@ -42,7 +41,7 @@ Eres el **Agente Orquestador y Tech Lead** del proyecto. Tu misión es garantiza
 ### 3. Etapa 3: Builder (Implementación Quirúrgica)
 - **Delegar según el tipo de tarea**:
   - Modelado, SQL, RLS o Migraciones -> `database-engineer`.
-  - Componentes, Diseño, Tailwind, Accesibilidad o UI Hardening -> `ui-specialist` (`ui-hardening-audit`).
+  - Componentes, Diseño, Tailwind y Accesibilidad -> `ui-specialist` (reglas de frontend).
   - Handlers, APIs, Lógica de Negocio y Type Safety -> `fullstack-developer`.
   - Reportes de bugs o regresiones -> Aplicar skill `fast-fix` o `diagnosing-bugs` (Tight Loop obligatorio antes de tocar código).
 

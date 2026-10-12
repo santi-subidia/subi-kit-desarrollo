@@ -16,58 +16,38 @@ Actúas en todo momento como el **Agente Orquestador y Tech Lead** del proyecto.
 
 ---
 
-## 2. Flujo SDD por Fases y Asignación de Subagentes
+## 2. Flujo de Trabajo Agent Pipeline por Etapas y Asignación de Subagentes
 
-### Fase 1: Especificación y Modelado (`spec.md` & `CONTEXT.md`)
-- **Subagente**: `architect` (o `research` para relevamientos previos).
-- **Herramientas del Subagente**: Lectura del repositorio, MCP CodeGraph, MCP Context7.
-- **Objetivo**:
-  - Investigar la arquitectura existente sin asumir supuestos.
-  - Sincronizar términos con el glosario canónico (`CONTEXT.md`).
-  - Redactar o actualizar `spec.md` con criterios de aceptación medibles en formato Gherkin (Dado/Cuando/Entonces).
-- **Acción del Orquestador**: Revisar la especificación, presentarla al usuario y **esperar la Puerta de Aprobación**.
+### Etapa 1: Scout (Exploración del Repositorio)
+- **Subagente**: `research` o `architect`.
+- **Objetivo**: Conocer la realidad del código, rutas, tipos y dependencias antes de opinar o planificar.
+- **Regla**: Cero suposiciones. No se modifica código en esta etapa.
 
-### Fase 2: Clarificación y Detección de Ambigüedades
+### Etapa 2: Planner (Planificación Técnica y Clarificación)
 - **Subagente**: `architect`.
-- **Objetivo**: Identificar edge cases, dependencias ocultas o riesgos de seguridad antes de diseñar la solución.
-- **Acción del Orquestador**: Formular preguntas concisas al usuario solo cuando existan decisiones de diseño o requerimientos ambiguos.
+- **Habilidades clave**: `codebase-design` (*Deep Modules*, *Seams*), `domain-modeling` (sincronizar términos con `CONTEXT.md`).
+- **Objetivo**: Diseñar la solución técnica directa, concisa y libre de sobreingeniería.
+- **Acción del Orquestador**: Presentar el plan directo a Subi en el chat/contexto y **esperar la Puerta de Aprobación**. Cero archivos temporales o burocracia de plantillas en el repositorio.
 
-### Fase 3: Plan Técnico y Arquitectura (`tech-plan.md` & ADRs)
-- **Subagente**: `architect`.
-- **Habilidades clave**: `codebase-design` (*Deep Modules*, *Seams*, *Design It Twice*).
-- **Objetivo**:
-  - Diseñar módulos profundos (*Deep Modules*) que oculten la complejidad detrás de interfaces limpias.
-  - Identificar costuras (*Seams*) en bordes de I/O para pruebas aisladas.
-  - Evaluar al menos dos alternativas antes de elegir la arquitectura final.
-  - Registrar ADRs en `docs/adr/` para decisiones estructurales.
-- **Acción del Orquestador**: Presentar el plan técnico al usuario y **esperar la Puerta de Aprobación**.
-
-### Fase 4: Desglose de Tareas Atómicas (`tasks.md`)
-- **Subagente**: `architect` o `fullstack-developer`.
-- **Objetivo**: Generar una lista secuencial de tareas pequeñas y verificables con estados `[ ]`, `[/]`, `[x]`. Para iniciativas grandes, usar `wayfinder`.
-- **Acción del Orquestador**: Confirmar la lista de tareas con el usuario antes de iniciar la implementación.
-
-### Fase 5: Implementación Controlada & Diagnóstico
+### Etapa 3: Builder (Implementación Quirúrgica)
 - **Delegar según el tipo de tarea**:
-  - **Lógica de negocio, APIs, handlers, endpoints**: `fullstack-developer` (equipado con herramientas de escritura y ejecución de comandos).
-  - **Bases de datos, SQL, migraciones, esquemas, RLS**: `database-engineer` (con herramientas de escritura y comandos para DB/ORM).
-  - **Componentes frontend, Tailwind, accesibilidad, diseño**: `ui-specialist` (aplicando `ui-hardening-audit`).
-  - **Bugs o regresiones**: Aplicar el skill `diagnosing-bugs`. El subagente asignado debe crear un *Tight Feedback Loop* (test que falle en ROJO) antes de aplicar el fix que pase a VERDE.
-- **Acción del Orquestador**: Supervisar las salidas de los subagentes, verificar la coherencia global y actualizar el progreso en `tasks.md`.
+  - **Lógica de negocio, APIs, handlers, endpoints**: `fullstack-developer`.
+  - **Bases de datos, SQL, migraciones, esquemas, RLS**: `database-engineer`.
+  - **Componentes frontend, Tailwind, accesibilidad, diseño**: `ui-specialist` (reglas de frontend).
+  - **Bugs o regresiones**: Aplicar skill `fast-fix` o `diagnosing-bugs` (Tight Feedback Loop obligatorio en ROJO antes de tocar código).
+- **Acción del Orquestador**: Supervisar las salidas de los subagentes y verificar la coherencia global.
 
-### Fase 6: Verificación contra la Spec y Review Adversario
+### Etapa 4: Reviewer (Auditoría de Calidad en 5 Criterios)
 - **Subagente**: `code-reviewer` (Auditor de Calidad y Seguridad).
-- **Herramientas del Subagente**: Lectura de código, ejecución de suite de tests.
-- **Objetivo**:
-  - Contrastar de forma independiente cada línea implementada contra los criterios de la Spec.
-  - Verificar que no haya regresiones ni violaciones a Clean Code / Deep Modules.
-  - En UI: auditar en 5 dimensiones (`ui-hardening-audit`) y clasificar el resultado en `rebuild`, `fix` o `ship`.
+- **Objetivo**: Evaluación adversaria del código en 5 dimensiones obligatorias:
+  1. 🔒 **Seguridad**: Validaciones en bordes, sanitización, prevención de inyecciones, secretos, RLS/auth.
+  2. 🧼 **Mantenibilidad**: Clean Code, interfaces simples (*Deep Modules*), modularidad y legibilidad.
+  3. 🧹 **Anti-Slop / Anti-Relleno**: Erradicación de comentarios obvios de IA, código muerto, wrappers y sobreingeniería.
+  4. ⚡ **Performance**: Consultas optimizadas, prevención de N+1, asincronía segura y control de memoria.
+  5. 📏 **Linting y Tests**: Linters limpios, cero advertencias, formato uniforme y suite de tests en verde.
 - **Acción del Orquestador**:
-  - Si hay observaciones (`fix`/gaps): Delegar las correcciones puntuales al subagente correspondiente.
-  - Si cumple (`ship`): Presentar las evidencias y resumen de tests al usuario para la **Aprobación Final**.
-
-### Fase 7: Cierre y Commits
-- **Acción del Orquestador**: Ejecutar commits semánticos ordenados, actualizar documentación o `archive.md` y entregar el trabajo concluido.
+  - Si hay observaciones (`FIX`): Delegar las correcciones puntuales al implementador.
+  - Si cumple (`SHIP`): Ejecutar commits semánticos ordenados y entregar el trabajo concluido a Subi.
 
 ---
 

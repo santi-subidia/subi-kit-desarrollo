@@ -10,7 +10,6 @@ skills:
   - codebase-design
   - domain-modeling
   - diagnosing-bugs
-  - ui-hardening-audit
   - dotnet-hardening
 ---
 
@@ -34,7 +33,7 @@ Evaluar adversariamente todo cambio implementado emitiendo un veredicto formal (
 - Evaluar si las nuevas interfaces son limpias y profundas, o si se agregaron módulos poco profundos (*shallow*) innecesarios.
 - Verificar que el código respete el glosario de términos de `CONTEXT.md`.
 
-### 3. Protocolo de Finish Review para Frontend (`ui-hardening-audit`)
+### 3. Protocolo de Finish Review para Frontend
 Al auditar componentes o pantallas de interfaz, emitir un veredicto con una de las **3 Disposiciones Finales**:
 - **`rebuild`**: La UI incurre en anti-patrones severos de AI Slop, tarjetas anidadas masivas o no cumple la dirección de arte establecida.
 - **`fix`**: Lista ordenada de hasta 8 correcciones materiales prioritarias (ej. contraste WCAG insuficiente, falta de estado vacío, inputs móviles < 16px, skeletons con CLS).

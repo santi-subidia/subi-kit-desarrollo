@@ -33,7 +33,7 @@ Diseñado bajo la premisa de **Real Engineering & Craftsmanship vs AI Slop**: er
 
 ## 🧰 Catálogo de Skills (10 Disciplinas)
 
-El directorio `skills/` contiene 10 especificaciones operativas empaquetadas según el estándar `SKILL.md` (con frontmatter YAML que incluye `name` y `description`).
+El directorio `skills/` contiene 8 especificaciones operativas empaquetadas según el estándar `SKILL.md` (con frontmatter YAML que incluye `name` y `description`).
 
 | Skill | Propósito | Cuándo Utilizarla | Plantillas / Recursos |
 | :--- | :--- | :--- | :--- |
@@ -42,7 +42,6 @@ El directorio `skills/` contiene 10 especificaciones operativas empaquetadas seg
 | **`domain-modeling`** | Construcción y refinamiento continuo del modelo de dominio, lenguaje ubicuo y registro de decisiones de arquitectura (ADRs). | Al clarificar conceptos de negocio, crear o sincronizar `CONTEXT.md` y documentar ADRs en `docs/adr/`. | Guía de ADR y modelado en `SKILL.md` |
 | **`diagnosing-bugs`** | Protocolo científico de depuración en 4 fases; **prohibido modificar código sin un Tight Feedback Loop en ROJO**. | Ante bugs difíciles, regresiones, excepciones inesperadas, timeouts o fallos intermitentes. | Protocolo de reproducción reproducible |
 | **`fast-fix`** | Flujo ágil y científico para corregir errores puntuales en 1 o 2 archivos sin el overhead documental de SDD. | Para parches rápidos, fixes de sintaxis o tests fallidos puntuales: Test (ROJO) → Fix → Test (VERDE) → Commit. | Ciclo de ejecución rápida |
-| **`ui-hardening-audit`** | Auditoría en 5 dimensiones (A11y WCAG AA, Rendimiento, Theming, Responsive e Integridad) y protocolo pre-entrega. | Antes de entregar o enviar a producción cualquier interfaz web o componente frontend. | Checklist de auditoría 5D y Polish Pre-Ship |
 | **`dotnet-hardening`** | Optimización de alto rendimiento en C#, consultas sargables en EF Core, asincronía segura (Zero Sync-over-Async) y memoria. | En proyectos .NET ante consultas lentas, problemas de ThreadPool/GC, migraciones EF Core o higiene MSBuild. | Guía prescriptiva de rendimiento |
 | **`wait-what`** | Comando de freno de mano y re-enfoque inmediato cuando la IA se vuelve verbosa, asume supuestos o pierde claridad. | Siempre que el agente se sobrecomplique o se desvíe; pausa la ejecución y resume en 3 viñetas concisas. | Mecanismo de re-alineamiento |
 | **`wayfinder`** | Planificación y cartografía de iniciativas masivas (Epics) que superan el contexto de una sola sesión de IA. | Cuando un proyecto requiere más de 100k tokens o varios días de trabajo mediante mapas de decisiones y grafos. | Mapa de dependencias y tickets atómicos |
@@ -72,12 +71,12 @@ flowchart TD
 
 | Rol de Agente | Tipo | Responsabilidad Principal | Skills Asociadas |
 | :--- | :---: | :--- | :--- |
-| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design`, `ui-hardening-audit`, `wait-what`, `wayfinder` |
+| **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design`, `wait-what`, `wayfinder` |
 | **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline`, `wayfinder` |
 | **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `agent-pipeline`, `diagnosing-bugs`, `codebase-design`, `dotnet-hardening` |
 | **`database-engineer`** | Subagente | Diseño de esquemas relacionales, políticas RLS en Supabase, migraciones SQL reproducibles y queries EF Core. | `dotnet-hardening` |
-| **`ui-specialist`** | Subagente | Especialista de interfaz frontend, accesibilidad WCAG AA y blindaje de componentes. | `ui-hardening-audit` |
-| **`code-reviewer`** | Subagente | Auditoría adversaria de código (Reviewer): Seguridad, Mantenibilidad, Anti-Slop, Performance y Linting (`SHIP` / `FIX`). | `agent-pipeline`, `codebase-design`, `domain-modeling`, `diagnosing-bugs`, `ui-hardening-audit` |
+| **`ui-specialist`** | Subagente | Especialista de interfaz frontend, Tailwind CSS, accesibilidad WCAG AA y componentes web. | Reglas de Frontend |
+| **`code-reviewer`** | Subagente | Auditoría adversaria de código (Reviewer): Seguridad, Mantenibilidad, Anti-Slop, Performance y Linting (`SHIP` / `FIX`). | `agent-pipeline`, `codebase-design`, `domain-modeling`, `diagnosing-bugs` |
 
 ---
 
@@ -143,7 +142,7 @@ cp -r /ruta/a/subi-kit-desarrollo/skills/* .agents/skills/
 
 # O seleccionar únicamente las skills deseadas:
 cp -r /ruta/a/subi-kit-desarrollo/skills/agent-pipeline .agents/skills/
-cp -r /ruta/a/subi-kit-desarrollo/skills/ui-hardening-audit .agents/skills/
+cp -r /ruta/a/subi-kit-desarrollo/skills/fast-fix .agents/skills/
 ```
 
 ---
@@ -176,7 +175,6 @@ Agrega la referencia al catálogo o a las directrices principales en tu archivo 
 Este proyecto adopta las skills de ingeniería de software ubicadas en `.agents/skills/`:
 - Para nuevas features y refactors: Seguir `.agents/skills/agent-pipeline/SKILL.md`
 - Para resolución de bugs: Seguir `.agents/skills/diagnosing-bugs/SKILL.md`
-- Para auditoría de interfaz: Seguir `.agents/skills/ui-hardening-audit/SKILL.md`
 ```
 
 #### 3. Cursor & Windsurf
@@ -204,14 +202,13 @@ subi-kit-desarrollo/
 │   ├── backend/                    # dotnet-csharp, node-apis, supabase-sql
 │   ├── core/                       # agent-behavior, clean-code, git-conventions...
 │   └── frontend/                   # react-nextjs, tailwind-css, typescript
-├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (9)
+├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (8)
 │   ├── agent-pipeline/             # Pipeline ágil de 4 etapas (Scout, Planner, Builder, Reviewer)
 │   ├── codebase-design/            # Deep Modules, Seams, Design It Twice
 │   ├── diagnosing-bugs/            # Diagnóstico científico & feedback loops
 │   ├── domain-modeling/            # Glosario ubicuo & ADRs
 │   ├── dotnet-hardening/           # Rendimiento .NET, EF Core & MSBuild
 │   ├── fast-fix/                   # Protocolo ágil de corrección de bugs
-│   ├── ui-hardening-audit/         # Auditoría 5D de calidad de UI
 │   ├── wait-what/                  # Freno de mano y rescate explicativo
 │   └── wayfinder/                  # Epics y mapas de decisión
 ├── .gitignore                      # Exclusiones estrictas (.codegraph/, .env*, caches)
