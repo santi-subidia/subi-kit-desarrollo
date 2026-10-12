@@ -17,6 +17,7 @@ skills:
   - domain-modeling
   - diagnosing-bugs
   - codebase-design
+  - dotnet-clean-architecture
 ---
 
 # Agente Orquestador & Tech Lead (Coordinador Principal) 👑

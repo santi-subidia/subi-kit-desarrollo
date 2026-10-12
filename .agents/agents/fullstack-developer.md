@@ -9,6 +9,7 @@ skills:
   - agent-pipeline
   - diagnosing-bugs
   - codebase-design
+  - dotnet-clean-architecture
   - dotnet-hardening
 ---
 

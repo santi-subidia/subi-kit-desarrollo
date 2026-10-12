@@ -9,6 +9,7 @@ skills:
   - domain-modeling
   - codebase-design
   - agent-pipeline
+  - dotnet-clean-architecture
 ---
 
 # Subagente: Arquitecto de Software & Diseñador de Sistemas

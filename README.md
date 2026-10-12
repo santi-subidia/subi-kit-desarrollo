@@ -31,9 +31,9 @@ Diseñado bajo la premisa de **Real Engineering & Craftsmanship vs AI Slop**: er
 
 ---
 
-## 🧰 Catálogo de Skills (10 Disciplinas)
+## 🧰 Catálogo de Skills (7 Disciplinas)
 
-El directorio `skills/` contiene 6 especificaciones operativas empaquetadas según el estándar `SKILL.md` (con frontmatter YAML que incluye `name` y `description`).
+El directorio `skills/` contiene 7 especificaciones operativas empaquetadas según el estándar `SKILL.md` (con frontmatter YAML que incluye `name` y `description`).
 
 | Skill | Propósito | Cuándo Utilizarla | Plantillas / Recursos |
 | :--- | :--- | :--- | :--- |
@@ -42,6 +42,7 @@ El directorio `skills/` contiene 6 especificaciones operativas empaquetadas seg�
 | **`domain-modeling`** | Construcción y refinamiento continuo del modelo de dominio, lenguaje ubicuo y registro de decisiones de arquitectura (ADRs). | Al clarificar conceptos de negocio, crear o sincronizar `CONTEXT.md` y documentar ADRs en `docs/adr/`. | Guía de ADR y modelado en `SKILL.md` |
 | **`diagnosing-bugs`** | Protocolo científico de depuración en 4 fases; **prohibido modificar código sin un Tight Feedback Loop en ROJO**. | Ante bugs difíciles, regresiones, excepciones inesperadas, timeouts o fallos intermitentes. | Protocolo de reproducción reproducible |
 | **`fast-fix`** | Flujo ágil y científico para corregir errores puntuales en 1 o 2 archivos sin el overhead documental de SDD. | Para parches rápidos, fixes de sintaxis o tests fallidos puntuales: Test (ROJO) → Fix → Test (VERDE) → Commit. | Ciclo de ejecución rápida |
+| **`dotnet-clean-architecture`** | Scaffolding y diseño de Clean Architecture en .NET (C#) con MediatR (ISender), FluentValidation automático y Architecture Tests (xUnit + NetArchTest). | Al crear soluciones .NET desde cero, estructurar capas o blindar dependencias de proyectos con tests de arquitectura. | Scripts CLI, pipelines y tests en `SKILL.md` |
 | **`dotnet-hardening`** | Optimización de alto rendimiento en C#, consultas sargables en EF Core, asincronía segura (Zero Sync-over-Async) y memoria. | En proyectos .NET ante consultas lentas, problemas de ThreadPool/GC, migraciones EF Core o higiene MSBuild. | Guía prescriptiva de rendimiento |
 
 ---
@@ -70,8 +71,8 @@ flowchart TD
 | Rol de Agente | Tipo | Responsabilidad Principal | Skills Asociadas |
 | :--- | :---: | :--- | :--- |
 | **`orchestrator`** | **Coordinador** | Tech Lead e interfaz principal con el usuario; gestiona el pipeline colaborativo, hace routing de tareas y valida puertas de aprobación. | `agent-pipeline`, `fast-fix`, `diagnosing-bugs`, `domain-modeling`, `codebase-design` |
-| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline` |
-| **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `agent-pipeline`, `diagnosing-bugs`, `codebase-design`, `dotnet-hardening` |
+| **`architect`** | Subagente | Lidera las etapas Scout & Planner: investiga dependencias, diseña la solución sin sobrecarga documental y aplica Deep Modules. | `domain-modeling`, `codebase-design`, `agent-pipeline`, `dotnet-clean-architecture` |
+| **`fullstack-developer`** | Subagente | Implementación estricta de código de producción (Builder), endpoints, componentes, TDD y feedback loops. | `agent-pipeline`, `dotnet-clean-architecture`, `dotnet-hardening`, `diagnosing-bugs`, `codebase-design` |
 | **`database-engineer`** | Subagente | Diseño de esquemas relacionales, políticas RLS en Supabase, migraciones SQL reproducibles y queries EF Core. | `dotnet-hardening` |
 | **`ui-specialist`** | Subagente | Especialista de interfaz frontend, Tailwind CSS, accesibilidad WCAG AA y componentes web. | Reglas de Frontend |
 | **`code-reviewer`** | Subagente | Auditoría adversaria de código (Reviewer): Seguridad, Mantenibilidad, Anti-Slop, Performance y Linting (`SHIP` / `FIX`). | `agent-pipeline`, `codebase-design`, `domain-modeling`, `diagnosing-bugs` |
@@ -200,11 +201,12 @@ subi-kit-desarrollo/
 │   ├── backend/                    # dotnet-csharp, node-apis, supabase-sql
 │   ├── core/                       # agent-behavior, clean-code, git-conventions...
 │   └── frontend/                   # react-nextjs, tailwind-css, typescript
-├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (6)
+├── skills/                         # CATÁLOGO PRINCIPAL DE SKILLS (7)
 │   ├── agent-pipeline/             # Pipeline ágil de 4 etapas (Scout, Planner, Builder, Reviewer)
 │   ├── codebase-design/            # Deep Modules, Seams, Design It Twice
 │   ├── diagnosing-bugs/            # Diagnóstico científico & feedback loops
 │   ├── domain-modeling/            # Glosario ubicuo & ADRs
+│   ├── dotnet-clean-architecture/  # Scaffolding Clean Arch, MediatR, FluentValidation & NetArchTest
 │   ├── dotnet-hardening/           # Rendimiento .NET, EF Core & MSBuild
 │   └── fast-fix/                   # Protocolo ágil de corrección de bugs
 ├── .gitignore                      # Exclusiones estrictas (.codegraph/, .env*, caches)
